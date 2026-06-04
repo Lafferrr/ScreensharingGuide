@@ -22,7 +22,6 @@ This repository is intended for **server administrators, staff members, and fore
 | `tools.html` | Curated list of forensic tools with download links and one‑liner PowerShell scripts |
 | `styles.css` | Visual theme (glassmorphism, responsive) |
 | `app.js` | Client‑side functionality (copy buttons, modals, active nav) |
-| `*.txt` | Supplemental documentation (beginners, intermediate, advanced, bypass detections, etc.) |
 
 ## 🚀 Quick Start
 
@@ -51,16 +50,6 @@ This repository is intended for **server administrators, staff members, and fore
 - **Kernel live dump** analysis for fileless malware
 - **Knowledge base** covering 40+ bypass techniques (ADS, Unicode, process hollowing, UEFI bootkits, etc.)
 - **Tool repository** with direct download links and one‑line import commands
-
-## 📜 Ethics & Legal Disclaimer
-
-> **Important:** This guide is provided for **educational and defensive purposes only**.  
-> - Do **not** use these techniques to steal session tokens, private data, or violate any laws.  
-> - Always obtain **explicit consent** from the user before accessing their system.  
-> - Respect privacy – never browse personal files (photos, documents) without strong suspicion and server policy approval.  
-> - Some methods (e.g., kernel dumps) require administrator privileges; ensure you have permission.  
-
-The authors assume **no liability** for misuse of this information. Use at your own risk.
 
 ## 🤝 Contributing
 
