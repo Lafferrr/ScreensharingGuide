@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux Hack Checking Guide</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="nav-bar">
+        <div class="logo">Forensic Guide</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="windowsHackChecking.html" class="nav-link">Win Checking</a>
+            <a href="macHackChecking.html" class="nav-link">Mac Checking</a>
+            <a href="linuxHackChecking.html" class="nav-link">Linux Checking</a>
+            <a href="altChecking.html" class="nav-link">Alt Checking</a>
+            <a href="knowledgeBase.html" class="nav-link">Knowledge Base</a>
+            <a href="tools.html" class="nav-link">Tools</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>Linux Hack Checking Workflow</h1>
+            <p>Forensic protocols and shell commands for Linux screenshares.</p>
+        </header>
+
+        <section class="glass-panel">
+            <h2>Phase 1: Environment Identification</h2>
+            <p>Linux is highly customizable — logs, paths, and directories vary significantly between distributions (Ubuntu, Arch, Fedora, Debian). Always identify the environment first so your commands target the correct paths.</p>
+            <pre><code>cat /etc/os-release && uname -a</code></pre>
+            <button class="btn copy-btn" data-copy="cat /etc/os-release && uname -a">Copy Command</button>
+
+            <div class="alert warning">
+                <strong>Limitations:</strong> Linux has no Prefetch, no BAM, and no USN Journal. Your primary evidence sources are shell history, process inspection, loaded libraries, filesystem timestamps, and systemd/journalctl logs. Terminal history is your equivalent of BAM — guard it carefully.
+            </div>
+
+            <h3>Check for Hidden Directories in Home</h3>
+            <pre><code>ls -la ~/ | grep "^\."</code></pre>
+            <button class="btn copy-btn" data-copy="ls -la ~/ | grep &quot;^\.&quot;">Copy Command</button>
+            <p>Look for unusual hidden directories like <code>.meteor</code>, <code>.wurst</code>, or any folder with a random-looking name. Legitimate hidden directories include <code>.config</code>, <code>.local</code>, <code>.ssh</code>, etc.</p>
+        </section>
+
+        <section class="glass-panel">
+            <h2>Phase 2: Hidden Minecraft Directories</h2>
+            <p>Linux uses dotfiles to hide application data in the home directory. The <code>-laR</code> flag shows all hidden files, permissions, and modification times recursively.</p>
+
+            <h3>Vanilla Minecraft</h3>
+            <pre><code>cd ~/.minecraft/mods && ls -laR</code></pre>
+            <button class="btn copy-btn" data-copy="cd ~/.minecraft/mods && ls -laR">Copy Command</button>
+
+            <h3>Flatpak/Snap Minecraft</h3>
+            <p>If installed via Flatpak, the path is entirely different:</p>
+            <pre><code>cd ~/.var/app/com.mojang.Minecraft/.minecraft/mods && ls -laR</code></pre>
+            <button class="btn copy-btn" data-copy="cd ~/.var/app/com.mojang.Minecraft/.minecraft/mods && ls -laR">Copy Command</button>
+
+            <h3>Check All Common Minecraft Paths</h3>
+            <pre><code>find ~ -name "*.jar" -path "*/minecraft/*" -newer ~/.minecraft/launcher_profiles.json 2>/dev/null</code></pre>
+            <button class="btn copy-btn" data-copy="find ~ -name &quot;*.jar&quot; -path &quot;*/minecraft/*&quot; -newer ~/.minecraft/launcher_profiles.json 2>/dev/null">Copy Command</button>
+            <p>Any <code>.jar</code> newer than the launcher profiles (set at install time) has been added or modified after installation.</p>
+
+            <h3>Check /tmp for Cheat Artifacts</h3>
+            <pre><code>ls -laR /tmp/ 2>/dev/null | head -80</code></pre>
+            <button class="btn copy-btn" data-copy="ls -laR /tmp/ 2>/dev/null | head -80">Copy Command</button>
+            <p>Ghost clients frequently extract payloads to <code>/tmp</code> before injection because it is writable by all users and typically cleared on reboot. Check for any unexpected <code>.jar</code>, <code>.so</code>, or executable files.</p>
+        </section>
+
+        <section class="glass-panel">
+            <h2>Phase 3: Shell History Analysis</h2>
+            <p>This is the most critical phase on Linux — shell history is your primary execution record, equivalent to Prefetch and BAM on Windows.</p>
+
+            <h3>Check All History Files</h3>
+            <pre><code>cat ~/.bash_history; cat ~/.zsh_history; cat ~/.sh_history 2>/dev/null</code></pre>
+            <button class="btn copy-btn" data-copy="cat ~/.bash_history; cat ~/.zsh_history; cat ~/.sh_history 2>/dev/null">Copy Command</button>
+
+            <h3>Check History with Timestamps</h3>
+            <p>Bash can be configured to store timestamps with history entries:</p>
+            <pre><code>HISTTIMEFORMAT="%F %T " history 2>/dev/null | tail -100</code></pre>
+            <button class="btn copy-btn" data-copy="HISTTIMEFORMAT=&quot;%F %T &quot; history 2>/dev/null | tail -100">Copy Command</button>
+
+            <h3>Search for Suspicious Commands</h3>
+            <pre><code>grep -i -E 'rm|wget|curl|chmod|mv|LD_PRELOAD|javaagent|inject|python|nc |netcat|base64' ~/.bash_history ~/.zsh_history 2>/dev/null</code></pre>
+            <button class="btn copy-btn" data-copy="grep -i -E 'rm|wget|curl|chmod|mv|LD_PRELOAD|javaagent|inject|python|nc |netcat|base64' ~/.bash_history ~/.zsh_history 2>/dev/null">Copy Command</button>
+
+            <h3>What is a Flag:</h3>
+            <ul>
+                <li><strong>LD_PRELOAD:</strong> Forces a shared object (<code>.so</code>) to load into every process. <code>LD_PRELOAD=/path/to/cheat.so java -jar minecraft.jar</code> is a direct cheat injection.</li>
+                <li><strong>-javaagent:</strong> Running <code>java -javaagent:/path/cheat.jar</code> loads an arbitrary JAR at JVM startup before anti-cheat.</li>
+                <li><strong>history -c</strong> or <code>rm ~/.bash_history</code>: Wiping history to destroy evidence — immediate ban.</li>
+                <li><strong>wget/curl to /tmp or hidden dirs:</strong> Downloading files to temporary locations shortly before the session.</li>
+                <li><strong>base64 decode:</strong> A base64-decoded command executed in shell is a common fileless execution pattern.</li>
+            </ul>
+
+            <div class="alert warning">
+                <strong>Empty history:</strong> Both history files empty or absent on a system with active Minecraft use indicates history deletion. Treat as highly suspicious.
+            </div>
+        </section>
+
+        <section class="glass-panel">
+            <h2>Phase 4: Process and Memory Inspection</h2>
+
+            <h3>Check Java Execution Arguments</h3>
+            <pre><code>ps -ef | grep java</code></pre>
+            <button class="btn copy-btn" data-copy="ps -ef | grep java">Copy Command</button>
+            <p>Inspect the full command line. Look for: <code>-javaagent:</code> pointing to unknown JARs, <code>-cp</code> classpath entries from non-standard directories, or <code>LD_PRELOAD</code> set in the process environment.</p>
+
+            <h3>Check Full Process Environment</h3>
+            <p>Get the PID from the above command, then read the process environment for any injected variables:</p>
+            <pre><code>cat /proc/$(pgrep -n java)/environ 2>/dev/null | tr '\0' '\n' | grep -i "preload\|agent\|inject"</code></pre>
+            <button class="btn copy-btn" data-copy="cat /proc/$(pgrep -n java)/environ 2>/dev/null | tr '\0' '\n' | grep -i &quot;preload\|agent\|inject&quot;">Copy Command</button>
+
+            <h3>Check Loaded Shared Objects (.so)</h3>
+            <pre><code>cat /proc/$(pgrep -n java)/maps | grep -i "\.so" | grep -v "/usr/\|/lib\|jdk\|jre\|minecraft"</code></pre>
+            <button class="btn copy-btn" data-copy="cat /proc/$(pgrep -n java)/maps | grep -i &quot;\.so&quot; | grep -v &quot;/usr/\|/lib\|jdk\|jre\|minecraft&quot;">Copy Command</button>
+            <p>Any <code>.so</code> library loaded from <code>~/</code>, <code>/tmp</code>, or <code>/home</code> instead of standard system directories (<code>/usr/lib</code>, <code>/lib</code>) is a major red flag. This is the Linux equivalent of an injected DLL.</p>
+
+            <h3>Check /proc cmdline for All Java Processes</h3>
+            <pre><code>for pid in $(pgrep java); do echo "PID $pid:"; cat /proc/$pid/cmdline 2>/dev/null | tr '\0' ' '; echo; done</code></pre>
+            <button class="btn copy-btn" data-copy="for pid in $(pgrep java); do echo &quot;PID $pid:&quot;; cat /proc/$pid/cmdline 2>/dev/null | tr '\0' ' '; echo; done">Copy Command</button>
+        </section>
+
+        <section class="glass-panel">
+            <h2>Phase 5: Filesystem Integrity Checks</h2>
+
+            <h3>Recently Modified Files (Last 60 Minutes)</h3>
+            <pre><code>find ~/ -mmin -60 -type f -not -path "*/cache/*" -not -path "*/.config/pulse/*" 2>/dev/null | head -50</code></pre>
+            <button class="btn copy-btn" data-copy="find ~/ -mmin -60 -type f -not -path &quot;*/cache/*&quot; -not -path &quot;*/.config/pulse/*&quot; 2>/dev/null | head -50">Copy Command</button>
+
+            <h3>Check Minecraft Libraries for Tampering</h3>
+            <pre><code>find ~/.minecraft/libraries -name "*.jar" -newer ~/.minecraft/launcher_profiles.json 2>/dev/null</code></pre>
+            <button class="btn copy-btn" data-copy="find ~/.minecraft/libraries -name &quot;*.jar&quot; -newer ~/.minecraft/launcher_profiles.json 2>/dev/null">Copy Command</button>
+
+            <h3>Search for Executable Files in Unusual Locations</h3>
+            <pre><code>find ~/ /tmp -perm /111 -type f -not -path "*/bin/*" -not -path "*/.local/share/*" 2>/dev/null | grep -v "\.sh$\|\.py$" | head -30</code></pre>
+            <button class="btn copy-btn" data-copy="find ~/ /tmp -perm /111 -type f -not -path &quot;*/bin/*&quot; -not -path &quot;*/.local/share/*&quot; 2>/dev/null | grep -v &quot;\.sh$\|\.py$&quot; | head -30">Copy Command</button>
+            <p>This finds executable files in home and temp directories, excluding standard local binaries. Any unexpected executable here — especially with a non-executable-looking name — is suspicious.</p>
+        </section>
+
+        <section class="glass-panel">
+            <h2>Phase 6: Systemd Journal & System Logs</h2>
+
+            <h3>Check Recent System Logs</h3>
+            <pre><code>journalctl -xe --since "1 hour ago" 2>/dev/null | tail -80</code></pre>
+            <button class="btn copy-btn" data-copy="journalctl -xe --since &quot;1 hour ago&quot;" >Copy Command</button>
+
+            <h3>Check Specifically for Java/Minecraft Events</h3>
+            <pre><code>journalctl -xe --since "2 hours ago" 2>/dev/null | grep -i "java\|minecraft\|error\|killed\|segfault" | tail -40</code></pre>
+            <button class="btn copy-btn" data-copy="journalctl -xe --since &quot;2 hours ago&quot; 2>/dev/null | grep -i &quot;java\|minecraft\|error\|killed\|segfault&quot; | tail -40">Copy Command</button>
+
+            <h3>Check USB Device History</h3>
+            <pre><code>dmesg | grep -i usb | tail -30</code></pre>
+            <button class="btn copy-btn" data-copy="dmesg | grep -i usb | tail -30">Copy Command</button>
+            <p>Look for USB storage devices (<code>usb-storage</code>, <code>sd</code> block devices) connected recently. An external drive plugged in just before the screenshare and then removed is suspicious, especially if no other evidence of the cheat remains.</p>
+
+            <h3>Check for Recently Cleared Logs</h3>
+            <pre><code>ls -la /var/log/ | sort -k6,7 | tail -20</code></pre>
+            <button class="btn copy-btn" data-copy="ls -la /var/log/ | sort -k6,7 | tail -20">Copy Command</button>
+            <p>If systemd journal logs or auth logs have a very recent modification time but contain very little data, they may have been cleared.</p>
+        </section>
+
+        <section class="glass-panel">
+            <h2>Phase 7: Persistence & Cron Checks</h2>
+            <p>Some advanced cheats install persistence mechanisms to survive reboots. Check these locations for unauthorized entries.</p>
+
+            <h3>User Crontab</h3>
+            <pre><code>crontab -l 2>/dev/null</code></pre>
+            <button class="btn copy-btn" data-copy="crontab -l 2>/dev/null">Copy Command</button>
+
+            <h3>Systemd User Services</h3>
+            <pre><code>ls -la ~/.config/systemd/user/ 2>/dev/null
+systemctl --user list-units --type=service 2>/dev/null</code></pre>
+            <button class="btn copy-btn" data-copy="ls -la ~/.config/systemd/user/ 2>/dev/null; systemctl --user list-units --type=service 2>/dev/null">Copy Command</button>
+            <p>Any custom systemd service or cron job not associated with known software (backup tools, update managers) warrants investigation, especially if it references a Java process or a file in a suspicious path.</p>
+
+            <h3>Shell RC Files</h3>
+            <pre><code>cat ~/.bashrc ~/.zshrc ~/.profile 2>/dev/null | grep -i "preload\|agent\|export\|alias" | grep -v "^#"</code></pre>
+            <button class="btn copy-btn" data-copy="cat ~/.bashrc ~/.zshrc ~/.profile 2>/dev/null | grep -i &quot;preload\|agent\|export\|alias&quot; | grep -v &quot;^#&quot;">Copy Command</button>
+            <p>Check if <code>LD_PRELOAD</code> is persistently set in shell startup files — this would inject a shared object into every program the user launches, including Minecraft.</p>
+        </section>
+
+        <section class="glass-panel">
+            <h2>Phase 8: Mouse Software and Macros</h2>
+            <p>Check for macro tools installed on the system. Linux users may use <code>xdotool</code>, <code>xmacro</code>, or <code>AutoKey</code> for automated clicking.</p>
+            <pre><code>which xdotool xmacro autokey 2>/dev/null
+dpkg -l | grep -i "xdotool\|macro\|autokey" 2>/dev/null
+rpm -qa | grep -i "xdotool\|macro\|autokey" 2>/dev/null</code></pre>
+            <button class="btn copy-btn" data-copy="which xdotool xmacro autokey 2>/dev/null">Copy Command</button>
+            <p>If any macro tools are installed, inspect their configuration files for profiles that send rapid left-click events.</p>
+        </section>
+
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

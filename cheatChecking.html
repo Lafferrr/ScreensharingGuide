@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hack Checking Guide</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="nav-bar">
+        <div class="logo">Forensic Guide</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="cheatChecking.html" class="nav-link">Hack Checking</a>
+            <a href="altChecking.html" class="nav-link">Alt Checking</a>
+            <a href="knowledgeBase.html" class="nav-link">Knowledge Base</a>
+            <a href="tools.html" class="nav-link">Tools</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>Hack Checking Workflow</h1>
+            <p>A step-by-step methodology for exposing modifications and bypasses.</p>
+        </header>
+
+        <section class="glass-panel">
+            <h2>Phase 1: Environment Preparation</h2>
+            <p>Before executing any tools, you must prepare the suspect's environment to ensure evidence is preserved and tools run correctly.</p>
+            <ul>
+                <li><strong>Start Recording:</strong> ALWAYS record the screensharing session. Provide video proof of all findings.</li>
+                <li><strong>Disable Protections:</strong> Turn off Windows Defender and all third-party Antivirus software to prevent them from deleting forensic tools.</li>
+                <li><strong>Network Anonymity:</strong> If using AnyDesk, turn on a VPN to protect your IP address.</li>
+            </ul>
+        </section>
+
+        <section class="glass-panel">
+            <h2>Phase 2: Initial Triage (Scripts)</h2>
+            <p>Run these scripts via an Administrator PowerShell to gather quick intel on system integrity.</p>
+            
+            <h3>1. Service & Integrity Checker</h3>
+            <p>Checks disabled services, event logs, prefetch tampering, and the recycle bin.</p>
+            <pre><code>Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/praiselily/lilith-ps/refs/heads/main/Services.ps1)</code></pre>
+            <button class="btn copy-btn" data-copy="Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/praiselily/lilith-ps/refs/heads/main/Services.ps1)">Copy Command</button>
+
+            <h3>2. Mod Analyzer</h3>
+            <p>Analyzes loaded JVM arguments, identifies disallowed mods, and checks for false flags.</p>
+            <pre><code>powershell -Command "Set-ExecutionPolicy Bypass -Scope Process; Invoke-Expression (Invoke-RestMethod 'https://raw.githubusercontent.com/HadronCollision/PowershellScripts/refs/heads/main/HabibiModAnalyzer.ps1')"</code></pre>
+            <button class="btn copy-btn" data-copy="powershell -Command &quot;Set-ExecutionPolicy Bypass -Scope Process; Invoke-Expression (Invoke-RestMethod 'https://raw.githubusercontent.com/HadronCollision/PowershellScripts/refs/heads/main/HabibiModAnalyzer.ps1')&quot;">Copy Command</button>
+        </section>
+
+        <section class="glass-panel">
+            <h2>Phase 3: Deep Forensic Analysis</h2>
+            <p>Download the required tools using the collector script and perform manual analysis.</p>
+
+            <h3>Tool Collector</h3>
+            <p>Downloads BAMParser, Everything, JarParser, JournalTrace, MacroScanner, PrefetchParser, System Informer, and WinPrefetchView to `C:\Screenshare`.</p>
+            <pre><code>powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/praiselily/lilith-ps/refs/heads/main/Collector.ps1)</code></pre>
+            <button class="btn copy-btn" data-copy="powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/praiselily/lilith-ps/refs/heads/main/Collector.ps1)">Copy Command</button>
+
+            <h3>Analysis Checklist</h3>
+            <ol>
+                <li><strong>JarParser:</strong> Analyze loaded .jar files via Prefetch and DcomLaunch strings to find unloaded mods.</li>
+                <li><strong>Journal Trace:</strong> Scan the USN Journal for `.jar`, `powershell`, `.pf`, and `.lnk` to identify deleted files, replacements, or file drops.</li>
+                <li><strong>BAM Parser / Prefetch Parser:</strong> Check for recently executed unsigned executables or tools used to clear logs.</li>
+                <li><strong>MacroScanner:</strong> Analyze mouse software (Logitech, Razer, Corsair, Glorious) for rapid click macros.</li>
+                <li><strong>System Informer (Canary):</strong> Use the kernel-mode driver. Inspect process memory strings (e.g., `csrss.exe`, `PcaSvc`) for executed paths, spoofed extensions, and loaded jars.</li>
+                <li><strong>String Analysis:</strong> Dump memory of suspected processes and run strings/YARA rules looking for cheat identifiers (e.g., <code>killaura</code>, <code>triggerbot</code>, <code>autocrystal</code>).</li>
+            </ol>
+            
+            <div class="alert info">
+                <strong>Tip:</strong> Cross-reference findings. If you find a suspicious execution in BAM, verify its deletion in Journal Trace and check if Prefetch was cleared.
+            </div>
+        </section>
+        
+        <section class="glass-panel">
+            <h2>Phase 4: Final Verification</h2>
+            <p>If the server rules permit, use an automated verification tool like Echo or Ocean to confirm findings. Note that automated tools should supplement, not replace, manual forensics.</p>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

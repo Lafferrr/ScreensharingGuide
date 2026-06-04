@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Base - Forensic Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .kb-category-title {
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-secondary);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--surface-border);
+        }
+        .kb-card {
+            background: rgba(20, 22, 28, 0.6);
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            padding: 1.4rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .kb-card:hover {
+            border-color: rgba(99,102,241,0.5);
+            background: rgba(25,28,36,0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(0,0,0,0.25);
+        }
+        .kb-card h3 { margin: 0; color: #fff; font-size: 1.05rem; }
+        .kb-card p { margin: 0; font-size: 0.85rem; color: var(--text-secondary); }
+        .kb-card .card-arrow { align-self: flex-end; color: var(--primary-color); font-size: 1.1rem; margin-top: 0.5rem; }
+        /* Level badges on cards */
+        .kb-card .level-badge { margin-bottom: 0; font-size: 0.7rem; padding: 0.15rem 0.55rem; }
+        .level-beginner { background: rgba(34,197,94,0.2); color: #4ade80; }
+        .level-intermediate { background: rgba(245,158,11,0.2); color: #fbbf24; }
+        .level-advanced { background: rgba(239,68,68,0.2); color: #f87171; }
+        /* Modal */
+        .kb-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .kb-modal.active { display: flex; }
+        .kb-modal-content {
+            background: #0f1115;
+            border: 1px solid var(--surface-border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            max-width: 780px;
+            width: 100%;
+            max-height: 88vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        .kb-modal-content h2 { margin-top: 0; font-size: 1.7rem; }
+        .kb-modal-content h3 { font-size: 1.15rem; margin-top: 1.8rem; color: #e2e8f0; }
+        .kb-modal-close {
+            position: absolute; top: 1.2rem; right: 1.4rem;
+            background: transparent; border: none;
+            color: var(--text-secondary); font-size: 1.6rem;
+            cursor: pointer; line-height: 1;
+        }
+        .kb-modal-close:hover { color: #fff; }
+        .kb-modal-content pre { margin: 0.75rem 0; }
+        .kb-modal-content .alert { margin: 1rem 0; }
+    </style>
+</head>
+<body>
+    <nav class="nav-bar">
+        <div class="logo">Forensic Guide</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="windowsHackChecking.html" class="nav-link">Win Checking</a>
+            <a href="macHackChecking.html" class="nav-link">Mac Checking</a>
+            <a href="linuxHackChecking.html" class="nav-link">Linux Checking</a>
+            <a href="altChecking.html" class="nav-link">Alt Checking</a>
+            <a href="knowledgeBase.html" class="nav-link active">Knowledge Base</a>
+            <a href="tools.html" class="nav-link">Tools</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>Forensic Knowledge Base</h1>
+            <p>Click any topic to open the full detailed entry. Topics are grouped by expertise level.</p>
+        </header>
+
+        <!-- BEGINNER -->
+        <p class="kb-category-title">Beginner</p>
+        <div class="grid">
+            <div class="kb-card" onclick="openKB('paths')">
+                <span class="level-badge level-beginner">Beginner</span>
+                <h3>Specific Path Checks</h3>
+                <p>Where cheats live on the filesystem — Temp folders, Recycle Bin, AppData, and common hidden directories.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('macros')">
+                <span class="level-badge level-beginner">Beginner</span>
+                <h3>Macros & Scripts</h3>
+                <p>Hardware macros, AHK scripts, mouse software analysis, and MeowImportsChecker.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('alts')">
+                <span class="level-badge level-beginner">Beginner</span>
+                <h3>Alt Accounts Overview</h3>
+                <p>How alt accounts are used to evade bans and how launcher JSON files expose them.</p>
+                <span class="card-arrow">→</span>
+            </div>
+        </div>
+
+        <!-- INTERMEDIATE -->
+        <p class="kb-category-title">Intermediate</p>
+        <div class="grid">
+            <div class="kb-card" onclick="openKB('registry')">
+                <span class="level-badge level-intermediate">Intermediate</span>
+                <h3>Registry Analysis</h3>
+                <p>BAM, UserAssist, Amcache, and OpenSavePidlMRU — execution artifacts that survive file deletion.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('mods')">
+                <span class="level-badge level-intermediate">Intermediate</span>
+                <h3>Mod Analyzing & Meta Checks</h3>
+                <p>JVM arguments, -javaagent injection, library tampering, and mod analyzer tools.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('bypass-spoofed')">
+                <span class="level-badge level-intermediate">Intermediate</span>
+                <h3>Bypass: Spoofed Extensions</h3>
+                <p>Renaming .exe to .png or .txt and executing via WMI or Start-Process to hide from simple scans.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('bypass-unicode')">
+                <span class="level-badge level-intermediate">Intermediate</span>
+                <h3>Bypass: Unicode Characters</h3>
+                <p>Using Cyrillic, Georgian, or zero-width characters in filenames to break System Informer and USN Journal.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('bypass-ads')">
+                <span class="level-badge level-intermediate">Intermediate</span>
+                <h3>Bypass: Alternate Data Streams</h3>
+                <p>Hiding entire executables inside the NTFS streams of innocent files.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('bypass-readonly')">
+                <span class="level-badge level-intermediate">Intermediate</span>
+                <h3>Bypass: Read-Only Attribute</h3>
+                <p>Setting Prefetch files to read-only to freeze their timestamps and prevent new logging.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('bypass-obfuscation')">
+                <span class="level-badge level-intermediate">Intermediate</span>
+                <h3>Bypass: Code Obfuscation</h3>
+                <p>Scrambled bytecode, string encryption, and packing to prevent decompilation and signature detection.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('bypass-hex')">
+                <span class="level-badge level-intermediate">Intermediate</span>
+                <h3>Bypass: Hex Editing</h3>
+                <p>Binary modification to change file hashes, remove strings, or patch anti-screenshare exit code.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('bypass-camouflage')">
+                <span class="level-badge level-intermediate">Intermediate</span>
+                <h3>Bypass: Camouflaged Cheats</h3>
+                <p>Cheats built to impersonate Spotify, AnyDesk, Zoom, Notepad with matching icons and version info.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('bypass-usb')">
+                <span class="level-badge level-intermediate">Intermediate</span>
+                <h3>Bypass: External USB / FAT32</h3>
+                <p>Running cheats from external drives. FAT32 has no journaling — deletions leave almost no trace.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('bypass-cloud')">
+                <span class="level-badge level-intermediate">Intermediate</span>
+                <h3>Bypass: Cloud Storage</h3>
+                <p>Storing cheats in OneDrive or Google Drive so an accomplice can delete them remotely mid-SS.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('bypass-dll')">
+                <span class="level-badge level-intermediate">Intermediate</span>
+                <h3>Bypass: DLL Injection Methods</h3>
+                <p>Regsvr32, Rundll32, CSRSS regex, OpenSavePidlMRU — detecting injected DLLs through multiple vectors.</p>
+                <span class="card-arrow">→</span>
+            </div>
+        </div>
+
+        <!-- ADVANCED -->
+        <p class="kb-category-title">Advanced</p>
+        <div class="grid">
+            <div class="kb-card" onclick="openKB('bypass-threads')">
+                <span class="level-badge level-advanced">Advanced</span>
+                <h3>Bypass: Suspended Threads</h3>
+                <p>Freezing service threads so SysMain, DPS, and EventLog stop logging while appearing "Running."</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('bypass-hollowing')">
+                <span class="level-badge level-advanced">Advanced</span>
+                <h3>Bypass: Process Hollowing</h3>
+                <p>Unmapping a legitimate process and replacing its code with a cheat payload that runs under a trusted PID.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('bypass-fileless')">
+                <span class="level-badge level-advanced">Advanced</span>
+                <h3>Bypass: Fileless Execution & LotL</h3>
+                <p>Living-off-the-Land techniques — executing cheats entirely in memory using PowerShell, WMI, or mshta.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('bypass-shellcode')">
+                <span class="level-badge level-advanced">Advanced</span>
+                <h3>Bypass: Shellcode Injection</h3>
+                <p>Injecting raw machine code into javaw.exe via CreateRemoteThread, thread hijacking, or APC queuing.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('bypass-com')">
+                <span class="level-badge level-advanced">Advanced</span>
+                <h3>Bypass: COM Hijacking</h3>
+                <p>Redirecting COM object registry entries to load a malicious DLL inside a trusted process — no admin needed.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('bypass-steg')">
+                <span class="level-badge level-advanced">Advanced</span>
+                <h3>Bypass: Steganography</h3>
+                <p>Hiding a cheat payload inside image, audio, or document files by modifying their byte structure.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('bypass-wmic')">
+                <span class="level-badge level-advanced">Advanced</span>
+                <h3>Bypass: WMIC Execution</h3>
+                <p>Launching processes via wmic to obscure parent-child relationships. Detectable in Explorer/SgrmBroker memory.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('bypass-ntfs')">
+                <span class="level-badge level-advanced">Advanced</span>
+                <h3>Bypass: NTFS File Replacement</h3>
+                <p>Renaming cheat files over legitimate ones to obscure their origin — detected by RENAME_OLD/NEW Journal pairs.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('bypass-proxy')">
+                <span class="level-badge level-advanced">Advanced</span>
+                <h3>Bypass: Proxy Clients</h3>
+                <p>Routing gameplay through an external server running cheat code — the local machine is completely clean.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('bypass-memoryclear')">
+                <span class="level-badge level-advanced">Advanced</span>
+                <h3>Bypass: Clearing Memory</h3>
+                <p>Manually wiping cheat strings from process memory before the SS — but the act itself leaves a detectable trace.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('services')">
+                <span class="level-badge level-advanced">Advanced</span>
+                <h3>Services & Thread Suspension Theory</h3>
+                <p>How stopping vs suspending a service differs forensically, and CMD obfuscation techniques.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('memory')">
+                <span class="level-badge level-advanced">Advanced</span>
+                <h3>Memory & Pool Tag Scanning</h3>
+                <p>Using Volatility pool tags to find processes hidden by DKOM rootkits that unlink them from the active process list.</p>
+                <span class="card-arrow">→</span>
+            </div>
+            <div class="kb-card" onclick="openKB('uefi')">
+                <span class="level-badge level-advanced">Advanced</span>
+                <h3>UEFI Based Cheats</h3>
+                <p>EFI bootkit cheats that load before Windows. Detection via ESP inspection, Measured Boot logs, and Secure Boot state.</p>
+                <span class="card-arrow">→</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div class="kb-modal" id="kbModal" onclick="closeKBIfOutside(event)">
+        <div class="kb-modal-content" id="kbModalContent">
+            <button class="kb-modal-close" onclick="closeKB()">&times;</button>
+            <div id="kbModalBody"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+    const kbContent = {
+        paths: `<h2>Specific Path Checks</h2>
+<h3>Temp Folders</h3>
+<p>Most ghost clients run as loaders that extract a malicious <code>.dll</code> or <code>.jar</code> payload into a temporary directory before injecting into Minecraft.</p>
+<ul>
+<li><code>%TEMP%</code> — User temp</li>
+<li><code>C:\\Windows\\Temp</code> — System temp</li>
+<li><code>C:\\Windows\\Help\\OEM\\IndexStore\\Cache</code> — Obscure path used by specific bypasses to hide logs</li>
+</ul>
+<div class="alert info"><strong>Detection:</strong> Sort by Date Modified. Files created or modified exactly when Minecraft launched are suspicious.</div>
+<h3>Recycle Bin ($Recycle.bin)</h3>
+<p>Deleted cheat files land here unless the user pressed <code>Shift + Delete</code>. Check the root <code>$Recycle.bin</code> folder modification timestamp — if modified right after your freeze command, they likely just emptied it. Bannable.</p>
+<h3>Common Hidden Directories</h3>
+<ul>
+<li><code>%AppData%\\Roaming</code> — Hidden folders starting with <code>.</code> (e.g., <code>.meteor</code>, <code>.wurst</code>)</li>
+<li><code>%LocalAppData%</code> — Some loaders drop configs here</li>
+<li><code>C:\\Users\\Public</code> — Writable by all users, used by some loaders</li>
+<li><code>C:\\ProgramData</code> — Commonly abused hidden system directory</li>
+<li><code>C:\\Windows\\Help\\OEM\\IndexStore\\Cache</code> — Used by specific cheat infrastructures to store logs</li>
+</ul>`,
+        macros: `<h2>Macros & Scripts</h2>
+<h3>MacroScanner</h3>
+<p>MacroScanner is a dedicated tool that performs all of the following automatically:</p>
+<ul>
+<li>Scans the system for script files with extensions like <code>.ahk</code>, <code>.py</code>, and other scripting languages used for auto-clicking. Analyzes their contents for macro keywords.</li>
+<li>Detects actively running and recently executed scripts.</li>
+<li>Scans for gaming software folders (Logitech G Hub, Razer Synapse, Corsair iCUE, Glorious Core) and reports when they were last run.</li>
+<li>Scans <code>dwm.exe</code> memory for the keyword "Macro." Normal strings include <code>configMacro</code>, <code>CRMacros</code>, <code>altmacro</code>, <code>endmacro</code>, <code>noaltmacro</code>. A flag is finding <code>198Macros</code>, <code>Hunt Macros</code>, <code>Zenith Macros</code>, or any irregular/unknown macro software name.</li>
+</ul>
+<h3>MeowImportsChecker</h3>
+<p>Scans folders like <code>C:\\</code> for files and directories, then analyzes strings for patterns commonly used in external cheat and macro clients. Looks for suspicious class imports, native bridging (JNI/JNA), and known macro frameworks.</p>
+<h3>Manual Mouse Software Inspection</h3>
+<p>Open Logitech G Hub, Razer Synapse, Corsair iCUE, or Glorious Core. Look for profiles tied to Minecraft or <code>javaw.exe</code>.</p>
+<div class="alert warning"><strong>Flag:</strong> Any macro on left-click with a hardcoded repeat interval — e.g., <code>Down → wait 10ms → Up → wait 10ms → Loop</code>. Human clicking physically cannot maintain a fixed-ms interval.</div>`,
+        alts: `<h2>Alt Accounts Overview</h2>
+<p>Cheaters use "Alt" (Alternative) accounts to evade bans. After their main is banned, they purchase cheap alts to continue playing.</p>
+<p>Launchers like Lunar, LabyMod, and Vanilla store session tokens and usernames in <code>.json</code> config files. Even if a user logs out before the screenshare, the token or username often remains cached in <code>accounts.json</code> or <code>launcher_profiles.json</code>.</p>
+<h3>Paths to Check</h3>
+<ul>
+<li><code>%AppData%\\.minecraft\\launcher_profiles.json</code></li>
+<li><code>%AppData%\\.minecraft\\launcher_accounts.json</code></li>
+<li><code>%UserProfile%\\.lunarclient\\settings\\game\\accounts.json</code></li>
+<li><code>%AppData%\\.minecraft\\LabyMod\\accounts.json</code></li>
+<li><code>%AppData%\\PrismLauncher\\accounts.json</code></li>
+<li><code>%AppData%\\MultiMC\\accounts.json</code></li>
+<li><code>%AppData%\\.tlauncher\\accounts.json</code></li>
+</ul>
+<p>Use <strong>RedLotusAltChecker</strong> or <strong>Lily's AltDetector</strong> to scan all of these automatically. See the <a href="altChecking.html">Alt Checking page</a> for download links.</p>`,
+        registry: `<h2>Registry Analysis (BAM, UserAssist, Amcache)</h2>
+<p>The Windows Registry is a goldmine for execution artifacts. Even after a file is deleted, the registry retains evidence it ran.</p>
+<h3>BAM (Background Activity Moderator)</h3>
+<p>Path: <code>HKLM\\SYSTEM\\CurrentControlSet\\Services\\bam\\State\\UserSettings\\{SID}</code></p>
+<p>Logs the full path of executables and their last execution timestamp. Finding <code>C:\\Users\\User\\Downloads\\Vape.exe</code> here after the file no longer exists on disk is strong evidence of execution and deletion. Use BAM Parser or <a href="https://github.com/Orbdiff/BAMReveal/" target="_blank">BAMReveal (Orbdiff)</a> to parse automatically.</p>
+<h3>UserAssist</h3>
+<p>Path: <code>HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\UserAssist</code></p>
+<p>Tracks GUI program launches. Entries are ROT-13 encoded (<code>Zvarpensg</code> = <code>Minecraft</code>). Use RECmd or Registry Explorer to decode automatically.</p>
+<h3>Amcache</h3>
+<p>Path: <code>C:\\Windows\\AppCompat\\Programs\\Amcache.hve</code></p>
+<p>Records the SHA-1 hash, full path, and first-execution timestamp of executables. Can show executions from external USB drives. Parse with AmcacheParser.</p>
+<h3>OpenSavePidlMRU (DLL Detection)</h3>
+<p>Path: <code>HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Comdlg32\\OpenSavePidlMRU</code></p>
+<p>Records files opened via Open/Save dialogs. Find the <code>.dll</code> subkey and export to identify DLL files recently interacted with — useful for detecting injected DLLs even if later deleted.</p>`,
+        mods: `<h2>Mod Analyzing & Meta Checks</h2>
+<h3>MeowModAnalyzer</h3>
+<p>Reads the running Minecraft process to inspect loaded JVM arguments, classpath, and active mod list. Identifies disallowed mods and flags suspicious load patterns.</p>
+<pre><code>powershell -ExecutionPolicy Bypass -Command "Invoke-Expression (Invoke-RestMethod 'https://raw.githubusercontent.com/MeowTonynoh/MeowModAnalyzer/main/MeowModAnalyzer.ps1')"</code></pre>
+<h3>YarpModAnalyzer</h3>
+<pre><code>powershell -ExecutionPolicy Bypass -Command "Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/YarpLetapStan/PowershellScripts/refs/heads/main/YarpsModAnalyzer6.0.ps1)"</code></pre>
+<h3>The -javaagent Flag</h3>
+<p>If the JVM command line contains <code>-javaagent:/path/to/file.jar</code> pointing to an unrecognized file, this is a primary ghost client injection method. It loads arbitrary code at JVM startup, before any anti-cheat initializes. Any unknown <code>-javaagent</code> path not belonging to the official launcher is an immediate ban.</p>
+<h3>Library Tampering</h3>
+<p>Check modification dates on libraries in <code>.minecraft\\libraries</code>. If a library JAR like <code>gson</code> or <code>authlib</code> was modified today but the game was installed months ago, it has been tampered with — a common cheat delivery vector.</p>`,
+        'bypass-spoofed': `<h2>Bypass: Spoofed Extensions</h2>
+<p>A cheat executable is renamed from <code>.exe</code> to a seemingly innocent extension — <code>logo.png</code>, <code>config.dll</code>, <code>notes.txt</code> — then executed using methods that don't depend on the file extension: PowerShell's <code>Start-Process</code>, WMI's <code>wmic process call create</code>, or scheduled tasks.</p>
+<h3>Detection</h3>
+<ul>
+<li><strong>Prefetch:</strong> Windows logs execution under the spoofed name. <code>LOGO.PNG-A1B2C3D4.pf</code> in Prefetch confirms a PNG was executed as a program — images do not generate Prefetch entries.</li>
+<li><strong>CSRSS Regex:</strong> <code>^[a-z]:.+\\.((?!exe|pyd|manifest|dll|config|\\\\|cpl|microsoft-|shell).)*$</code> — finds non-standard extensions that were executed.</li>
+<li><strong>DPS Regex:</strong> <code>^\\\\device\\\\harddiskvolume[0-99]\\\\((?!exe).)*$</code></li>
+<li><strong>Search Everything:</strong> Search for <code>content:"This program cannot be run in DOS mode."</code> to find PE executables regardless of extension.</li>
+</ul>`,
+        'bypass-unicode': `<h2>Bypass: Unicode Characters</h2>
+<p>Non-standard Unicode characters — Cyrillic, Chinese, Georgian, zero-width characters — are embedded in file or directory names. System Informer does not support Chinese or Georgian alphabets. The USN Journal displays these as question marks <code>?</code>, making Journal analysis unreliable for those paths.</p>
+<h3>Why it works</h3>
+<p>Searching for the file with a standard keyboard becomes impossible. String filters fail to match. Visual inspection is fooled by homoglyphs (a Cyrillic "а" looks identical to a Latin "a").</p>
+<h3>Detection</h3>
+<ul>
+<li><strong>Search Everything Regex:</strong> <code>regex:[^\\x00-\\x7F]</code> — finds all files with non-ASCII characters.</li>
+<li><strong>Rancio's Unicode Detector:</strong> Purpose-built for this bypass.</li>
+<li><strong>MFTECmd / INDXRipper:</strong> Parse filesystem metadata directly — more reliable with Unicode paths than OS API calls.</li>
+</ul>`,
+        'bypass-ads': `<h2>Bypass: Alternate Data Streams (ADS)</h2>
+<p>NTFS allows attaching hidden "streams" to any file. An entire cheat executable can live inside <code>notes.txt:hidden.exe</code>. The host file appears completely normal in File Explorer — correct size, correct content.</p>
+<p><strong>Creation:</strong> <code>type cheat.exe >> notes.txt:hidden.exe</code></p>
+<p><strong>Execution:</strong> <code>wmic process call create "C:\\notes.txt:hidden.exe"</code></p>
+<h3>Detection</h3>
+<ul>
+<li><code>dir /r C:\\Users\\%username%\\Downloads</code> — lists streams in the directory. Any stream beyond <code>:$DATA</code> and <code>Zone.Identifier</code> is suspicious.</li>
+<li><strong>AlternateStreamView (Nirsoft):</strong> Full GUI scan. Any stream with significant file size attached to a small file is a red flag.</li>
+<li><strong>Stream Detector (NoVirusThanks):</strong> Real-time alerts and SmartScreen ADS analysis.</li>
+<li><strong>USN Journal:</strong> Creating ADS generates <code>STREAM_CHANGE</code> or <code>NAMED_DATA_OVERWRITE</code> events on the host file.</li>
+</ul>`,
+        'bypass-readonly': `<h2>Bypass: Read-Only Attribute (Prefetch Tampering)</h2>
+<p>Setting the Read-Only attribute (<code>attrib +r</code>) on Prefetch files prevents SysMain from updating their Last Execution Time and Run Count. A cheat run after the attribute was set appears as if it was last executed much earlier.</p>
+<h3>Detection</h3>
+<ul>
+<li><strong>Check attributes:</strong> <code>dir /ar C:\\Windows\\Prefetch</code> — any <code>.pf</code> file with the read-only attribute is immediately suspicious.</li>
+<li><strong>USN Journal:</strong> Attribute changes generate <code>BASIC_INFO_CHANGE | CLOSE</code> events. Finding these on <code>.pf</code> files at the timestamp right before a freeze is strong evidence.</li>
+<li><strong>Timestamp mismatch:</strong> A <code>.pf</code> file with an old last-modified date, but BAM or DPS showing the corresponding program ran recently, confirms the attribute was set to freeze it.</li>
+</ul>`,
+        'bypass-obfuscation': `<h2>Bypass: Code Obfuscation</h2>
+<p>Cheat developers scramble compiled bytecode to prevent reverse engineering. Techniques: renaming all classes and methods to random characters (<code>a.class</code>, <code>b()</code>); encrypting string literals so module names don't appear in plaintext; packing the entire payload into an encrypted loader stub that decrypts at runtime.</p>
+<h3>Why it matters</h3>
+<p>An obfuscated mod cannot be quickly analyzed during a screenshare. You cannot verify its function. Most servers have a strict zero-tolerance policy — significantly obfuscated mods are a ban, because you cannot confirm safety.</p>
+<h3>Detection</h3>
+<ul>
+<li><strong>Decompile with Recaf / Luyten:</strong> If all class and method names are single letters or random sequences, it is heavily obfuscated.</li>
+<li><strong>Entropy Analysis:</strong> Packed/encrypted payloads have entropy &gt;7.0/8.0. Check with Detect It Easy (DiE).</li>
+<li><strong>Packer Detection:</strong> DiE recognizes UPX, Themida, VMProtect, and other common packers.</li>
+</ul>`,
+        'bypass-hex': `<h2>Bypass: Hex Editing</h2>
+<p>Directly modifying a cheat's binary with a hex editor (HxD, ImHex, 010 Editor) to: change specific strings and evade memory scanners; alter the file hash to bypass blocklists; patch out anti-screenshare exit code (e.g., code that detects AnyDesk and closes the cheat); or modify embedded configurations.</p>
+<h3>Detection</h3>
+<ul>
+<li><strong>Hash Mismatch:</strong> Any binary modification changes the SHA-256 hash. <code>Get-AuthenticodeSignature</code> on legitimately signed files returns <code>HashMismatch</code> if they were modified after signing.</li>
+<li><strong>USN Journal:</strong> File content modifications generate <code>DATA_OVERWRITE | CLOSE</code> events.</li>
+<li><strong>Manual hex comparison:</strong> Compare the suspect file byte-by-byte against the known clean version in HxD or ImHex.</li>
+</ul>`,
+        'bypass-camouflage': `<h2>Bypass: Camouflaged Cheats</h2>
+<p>A cheat is built to fully impersonate well-known legitimate software — Spotify, AnyDesk, Avidemux, Zoom, Notepad — complete with matching icons, version information, and installer packaging. The file looks completely legitimate at a glance.</p>
+<h3>Detection</h3>
+<ul>
+<li><strong>File size mismatch:</strong> Camouflaged cheats almost never perfectly match the real application's size. Compare against the known install size.</li>
+<li><strong>Installation path:</strong> Real Spotify lives in <code>%AppData%\\Spotify</code>. A "Spotify.exe" in Downloads or Temp is not Spotify.</li>
+<li><strong>Digital signature:</strong> <code>Get-AuthenticodeSignature filename.exe</code> — a fake will be unsigned or fail signature validation.</li>
+<li><strong>VirusTotal hash check:</strong> Compare the file hash against known legitimate builds.</li>
+</ul>`,
+        'bypass-usb': `<h2>Bypass: External USB Drives (FAT32)</h2>
+<p>Cheats are stored on and executed from external USB drives. The critical distinction: <strong>NTFS</strong> drives have a USN Journal — deletions are logged. <strong>FAT32 and exFAT</strong> have no journaling — a cheat deleted from a FAT32 drive leaves almost no traces in the filesystem's own metadata.</p>
+<h3>Detection</h3>
+<ul>
+<li><strong>USBDeview / USBSTOR Registry:</strong> <code>HKLM\\SYSTEM\\CurrentControlSet\\Enum\\USBSTOR</code> — check for storage devices connected recently. A device connected right before the freeze is a red flag.</li>
+<li><strong>FAT32 drive present = immediate ban:</strong> Having a FAT32-formatted USB storage device is bannable on most servers, as it is the primary tool for near-traceless cheat execution.</li>
+<li><strong>Prefetch / BAM:</strong> Even from USB, execution traces may appear in Prefetch/BAM referencing the USB drive letter.</li>
+<li><strong>Recuva / FTK Imager:</strong> On FAT32 drives, deleted files can often be recovered with forensic tools since there is no journal to update.</li>
+</ul>`,
+        'bypass-cloud': `<h2>Bypass: Cloud Storage</h2>
+<p>A cheat is stored in a synced folder (OneDrive, Google Drive, Dropbox). An accomplice on another device — or the player using a phone — deletes the cheat via the cloud web interface mid-SS. The file vanishes locally as the sync client processes the remote deletion.</p>
+<h3>Detection</h3>
+<ul>
+<li><strong>Check sync folders:</strong> Inspect <code>C:\\Users\\%username%\\OneDrive</code>, Google Drive, and Dropbox folders for suspicious files or recent modification timestamps.</li>
+<li><strong>USN Journal:</strong> The sync client writes filesystem changes that appear in the Journal — look for unexplained deletions in cloud sync directories near the freeze timestamp.</li>
+<li><strong>Sync client logs:</strong> Dropbox, OneDrive, and Google Drive all maintain local activity logs that can show remote deletions initiated from another device.</li>
+</ul>`,
+        'bypass-dll': `<h2>Bypass: DLL Injection Methods</h2>
+<p>Instead of running a standalone cheat <code>.exe</code>, a malicious DLL is injected directly into <code>javaw.exe</code> or another process. Several Windows-native utilities enable this with minimal traces.</p>
+<h3>Regsvr32 / Rundll32 Injection</h3>
+<p>Windows provides these to execute DLLs legitimately. Traces only appear in Prefetch and only via PECmd:</p>
+<pre><code>PECmd.exe -f "C:\\Windows\\Prefetch\\RUNDLL32.EXE-47BCE4E9.pf"
+PECmd.exe -f "C:\\Windows\\Prefetch\\REGSVR32.EXE-B31EC963.pf"</code></pre>
+<p>Output shows the <strong>Keyword</strong> (the DLL that was run) and the <strong>Executable</strong>. A suspicious or deleted DLL path confirms injection.</p>
+<h3>CSRSS DLL Regex</h3>
+<p>Open System Informer → CSRSS with highest private bytes → Properties → Memory → Strings. Apply: <code>^[A-Z]:\\.+\\.(dll)$</code> to find all loaded DLL paths. Copy results to a file and run through Paths Parser.</p>
+<h3>OpenSavePidlMRU</h3>
+<p>Navigate to <code>HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Comdlg32\\OpenSavePidlMRU</code> → find the <code>.dll</code> subkey → export and analyze. Records DLLs opened via any file dialog, even after deletion.</p>
+<h3>LastActivityViewer</h3>
+<p>NirSoft's LastActivityViewer collects data from Prefetch, Registry, and Recent files. Can detect injected DLL launches even with modified extensions.</p>`,
+        'bypass-threads': `<h2>Bypass: Suspended Threads</h2>
+<p>Instead of disabling a logging service (which generates a loud Event Log entry), the bypasser uses System Informer or custom API calls to suspend specific threads within a service's svchost process. The service shows as "Running" in all standard checks, but its core logging function is frozen.</p>
+<h3>Service → Thread DLL mapping</h3>
+<ul>
+<li><strong>SysMain (Prefetch): suspend <code>sechost.dll</code> thread</strong> → no new .pf files generated</li>
+<li><strong>PcaSvc: suspend <code>pcasvc.dll</code> thread</strong> → PCA execution recording stops</li>
+<li><strong>DPS: suspend <code>dps.dll</code> thread</strong> → DPS path recording stops</li>
+<li><strong>EventLog: suspend <code>wevtsvc.dll</code> thread</strong> → all event logging stops</li>
+<li><strong>dusmsvc: suspend <code>wlanapi.dll</code> thread</strong></li>
+<li><strong>cdpusersvc_[numbers]: suspend <code>ucrtbase.dll</code> thread</strong></li>
+</ul>
+<h3>Detection</h3>
+<p>In System Informer: locate the svchost hosting the target service → Properties → Threads. If any thread with a start address in the service's main DLL has state <strong>Suspended</strong>, that service is silently disabled. This is definitive evidence of deliberate tampering.</p>`,
+        'bypass-hollowing': `<h2>Bypass: Process Hollowing</h2>
+<p>A legitimate process (e.g., svchost.exe) is created in a suspended state, its original code is unmapped from memory, malicious code is written into the empty space, and the process is resumed. The cheat runs under the trusted process's identity and PID.</p>
+<h3>Mechanism</h3>
+<ol>
+<li>Create svchost.exe with <code>CREATE_SUSPENDED</code> flag</li>
+<li>Unmap original code via <code>NtUnmapViewOfSection</code></li>
+<li>Allocate new memory with <code>VirtualAllocEx</code></li>
+<li>Write malicious code via <code>WriteProcessMemory</code></li>
+<li>Redirect execution via <code>SetThreadContext</code> + <code>ResumeThread</code></li>
+</ol>
+<h3>Detection</h3>
+<ul>
+<li><strong>System Informer:</strong> Executable code in private memory regions not backed by any file on disk indicates hollowing.</li>
+<li><strong>Volatility <code>malfind</code>:</strong> Finds memory regions with Execute permissions containing PE headers.</li>
+<li><strong>Volatility <code>hollowfind</code>:</strong> Detects PEB path vs actual memory content discrepancies.</li>
+<li><strong>Prefetch anomalies:</strong> A hollowed process may produce a .pf entry with a missing or incorrect executable path.</li>
+</ul>`,
+        'bypass-fileless': `<h2>Bypass: Fileless Execution & Living-off-the-Land (LotL)</h2>
+<p>The cheat payload never touches disk. It is downloaded and executed entirely within volatile memory using legitimate Windows tools like <code>powershell.exe</code>, <code>wscript.exe</code>, or <code>mshta.exe</code>. No file = no Prefetch, no BAM trace for the payload itself.</p>
+<h3>Common LotL techniques</h3>
+<ul>
+<li><code>iex (iwr 'https://raw.githubusercontent.com/.../cheat.ps1')</code> — downloads and executes in memory</li>
+<li><code>powershell -EncodedCommand [base64]</code> — obfuscated command to evade simple string detection</li>
+<li><code>wmic process call create "powershell -nop -w hidden -c [payload]"</code></li>
+</ul>
+<h3>Detection</h3>
+<ul>
+<li><strong>Kernel Live Dump + bstrings:</strong> Even fileless payloads leave loader commands in kernel memory buffers. Search for: <code>iwr</code>, <code>iex</code>, <code>encodedcommand</code>, <code>base64</code>, <code>github</code>, <code>pastebin</code>.</li>
+<li><strong>Event Logs (PowerShell Script Block Logging):</strong> Event IDs 4103/4104 capture the actual PowerShell code executed if logging is enabled. Parse with Hayabusa.</li>
+<li><strong>YARA Rules:</strong> Scan process memory with YARA rules targeting shellcode stubs or cheat module signatures.</li>
+</ul>`,
+        'bypass-shellcode': `<h2>Bypass: Shellcode Injection</h2>
+<p>Position-independent machine code (shellcode) is allocated in javaw.exe memory with Execute permissions, then triggered via <code>CreateRemoteThread</code>, thread hijacking, or APC queuing. No file on disk, no standard module list entry.</p>
+<h3>Detection</h3>
+<ul>
+<li><strong>WMIC traces:</strong> If launched via <code>wmic process call create</code>, search the memory of <code>explorer.exe</code> and <code>SgrmBroker.exe</code> for the string "wmic." Results like <code>wmic process call create cheatname.exe</code> reveal the exact filename.</li>
+<li><strong>System Informer:</strong> Look for private memory regions (not backed by a file) with <code>PAGE_EXECUTE_READWRITE</code> permissions in javaw.exe. PE headers (MZ...) in such regions confirm injection.</li>
+<li><strong>Volatility <code>malfind</code>:</strong> Specifically designed to detect injected shellcode.</li>
+</ul>`,
+        'bypass-com': `<h2>Bypass: COM Hijacking</h2>
+<p>COM objects are identified by CLSIDs in the registry. An attacker modifies the registry entry for a frequently-used COM object to point to a malicious DLL instead of the legitimate one. When a trusted application instantiates that COM object, Windows loads the attacker's DLL into the application's process — no separate executable, no admin rights needed (HKCU).</p>
+<h3>Detection</h3>
+<ul>
+<li><strong>Registry inspection:</strong> Check <code>HKCU\\Software\\Classes\\CLSID\\</code> for entries pointing to DLL paths in Temp, Downloads, or non-standard directories. HKCU entries override system-wide HKCR without admin rights.</li>
+<li><strong>System Informer / ProcMon:</strong> Monitor explorer.exe and trusted processes for unexpected DLL loads from user-writable directories.</li>
+<li><strong>Volatility <code>ldrmodules</code>:</strong> Detects loaded DLLs including injected ones hidden from standard enumeration.</li>
+</ul>`,
+        'bypass-steg': `<h2>Bypass: Steganography</h2>
+<p>A cheat payload is hidden inside an ordinary file — <code>.jpg</code>, <code>.wav</code>, <code>.pdf</code> — by modifying the file's byte structure. The carrier file looks and functions normally. Unlike ADS, steganography modifies the file itself rather than attaching a separate NTFS stream.</p>
+<h3>Detection</h3>
+<ul>
+<li><strong>File size anomalies:</strong> A standard desktop wallpaper is typically 500KB–2MB. A "wallpaper.jpg" at 15MB is suspicious.</li>
+<li><strong>Hash comparison:</strong> If the file claims to be a known asset, compare its hash against the official hash.</li>
+<li><strong>Entropy analysis:</strong> Embedded encrypted/compressed data alters the file's statistical entropy. Use Detect It Easy.</li>
+<li><strong>StegDetect / StegExpose:</strong> Statistical analysis tools for detecting LSB embedding in images.</li>
+<li><strong>Hex editor:</strong> Look for appended data after the file's official EOF marker.</li>
+</ul>`,
+        'bypass-wmic': `<h2>Bypass: WMIC Execution</h2>
+<p>Windows Management Instrumentation (<code>wmic process call create</code>) launches processes in a way that can obscure parent-child relationships, making attribution harder in basic process monitors. The launched process may not have a visible parent link to the launching process.</p>
+<h3>Detection via Process Memory</h3>
+<ul>
+<li><strong>explorer.exe:</strong> Search strings for "wmic." Results like <code>wmic process call create cheatname.exe</code> directly reveal the cheat name and confirm the execution method.</li>
+<li><strong>SgrmBroker.exe:</strong> Confirms WMIC was used but may not include the executable name.</li>
+<li><strong>MsMpEng.exe (Defender):</strong> If Defender is running, it may have logged the full WMIC command including the cheat filename.</li>
+</ul>`,
+        'bypass-ntfs': `<h2>Bypass: NTFS File Replacement</h2>
+<p>Instead of simply deleting a cheat, the bypasser renames the cheat file over a legitimate file's location (or vice versa), then replaces with a clean file. This produces RENAME_OLD_NAME and RENAME_NEW_NAME journal entries at the same timestamp — which is the detection signature.</p>
+<h3>Detection</h3>
+<p>Look for simultaneous RENAME_OLD_NAME + RENAME_NEW_NAME pairs on .exe files in the USN Journal around the SS start time. Same filename, same timestamp, two rename entries = file was relocated/swapped.</p>
+<p>Note: this can also appear on legitimate downloads — verify context and file path.</p>`,
+        'bypass-proxy': `<h2>Bypass: Proxy Clients</h2>
+<p>A proxy client routes the player's Minecraft connection through an external server running cheat code. The local machine has zero cheat files — everything executes remotely. The local client is completely clean.</p>
+<h3>Detection</h3>
+<ul>
+<li><strong>TCPView / System Informer network:</strong> The Minecraft client should connect directly to the game server IP. If the active connection shows a relay IP between client and server, it indicates proxying.</li>
+<li><strong>No local evidence with suspicious gameplay:</strong> Clean Prefetch, BAM, and mods folder combined with flagged gameplay forces network-level verification.</li>
+</ul>
+<div class="alert warning"><strong>Note:</strong> IP/geolocation detection methods are controversial and server-policy dependent. TCPView analysis is the most ethical approach.</div>`,
+        'bypass-memoryclear': `<h2>Bypass: Clearing Memory</h2>
+<p>Some bypassers manually access and wipe memory regions of services like csrss.exe or javaw.exe using System Informer before the SS, attempting to erase cheat strings before the screensharer can see them.</p>
+<h3>Detection</h3>
+<p>The act of clearing memory leaves a residual artifact. In processes like <code>dwm.exe</code>, <code>explorer.exe</code>, or <code>taskhostw.exe</code>, search for the pattern <code>) (0x</code>. Results appear as:</p>
+<pre><code>name.exe (4684) (0x195c66a3000 - 0x195c66c7000)</code></pre>
+<p>Where <code>name.exe</code> is the process whose memory was accessed, <code>4684</code> is the PID, and the hex values are the memory range. This is a direct record that someone used a tool to interact with that memory region. Finding this pattern is strong grounds for a ban.</p>`,
+        services: `<h2>Services & Thread Suspension Theory</h2>
+<h3>Why stopping vs suspending a service differs</h3>
+<p>Stopping a service via <code>sc stop ServiceName</code> generates Event ID 7036 in the System event log — a loud, easily spotted record. Suspending threads generates no event log entry. The service manager still reports "Running." Only direct thread inspection in System Informer reveals the truth.</p>
+<h3>CMD Obfuscation</h3>
+<p>A CMD window can be made invisible during the screenshare by setting text and background to identical colors (black on black), or setting near-zero window transparency. Any cleanup commands typed become completely invisible to the screensharer watching. Detection: check the CMD window Properties (right-click title bar) for unusual color configurations, or check the USN Journal for file deletions that occurred from a CMD process during the SS.</p>`,
+        memory: `<h2>Memory & Pool Tag Scanning</h2>
+<p>Pool tag scanning is an advanced memory forensics technique to defeat rootkits using Direct Kernel Object Manipulation (DKOM). DKOM rootkits unlink processes from the Windows active process list so they don't appear in Task Manager.</p>
+<p>Every kernel pool allocation (like an <code>_EPROCESS</code> block) has a <code>POOL_HEADER</code> containing a unique 4-byte tag (<code>Proc</code> for processes, <code>File</code> for file objects, <code>Thrd</code> for threads). By scanning a raw memory dump for these tags with Volatility, an investigator reconstructs processes that were active completely independently of the OS's process list — defeating DKOM entirely.</p>
+<h3>Key Volatility Plugins</h3>
+<ul>
+<li><strong><code>psscan</code></strong> — Finds process objects (<code>Proc</code> tag) even if unlinked</li>
+<li><strong><code>malfind</code></strong> — Finds injected code in executable private memory</li>
+<li><strong><code>ldrmodules</code></strong> — Detects hidden DLLs not in standard module enumeration</li>
+<li><strong><code>hollowfind</code></strong> — Detects process hollowing via PEB path vs memory content</li>
+<li><strong><code>yarascan</code></strong> — Scans full memory dump with custom YARA rules</li>
+</ul>`,
+        uefi: `<h2>UEFI Based Cheats (Bootkits)</h2>
+<p>UEFI cheats load malicious EFI drivers at boot — before Windows, before the kernel, before any anti-cheat. By the time your game starts, the cheat is fully operational and invisible to all user-mode tools.</p>
+<h3>How they work</h3>
+<ul>
+<li>Require Secure Boot to be <strong>disabled.</strong></li>
+<li>Drop a <code>.efi</code> file on the EFI System Partition (ESP) and modify NVRAM boot order to run it before <code>bootmgfw.efi</code>.</li>
+<li><strong>There is always something on disk</strong> — a <code>.efi</code>, <code>.exe</code>, or <code>.dll</code> in System32, SysWOW64, or tied to a registry key. Fully disk-free UEFI cheats are technically impossible given how Windows and UEFI interact.</li>
+</ul>
+<h3>Detection</h3>
+<ul>
+<li><strong>Mount the ESP:</strong> <code>mountvol X: /s</code> as Administrator. The ESP should contain only <code>\\EFI\\</code> with Microsoft and OEM bootloaders. Any unknown <code>.efi</code> files or a <code>System32</code> folder on the ESP are guaranteed bootkits.</li>
+<li><strong>Measured Boot Logs:</strong> <code>C:\\Windows\\Logs\\MeasuredBoot\\*.log</code> — default boot path is <code>\\EFI\\Microsoft\\Boot\\bootmgfw.efi</code>. Any deviation confirms an alternate bootloader was inserted.</li>
+<li><strong>Secure Boot state:</strong> <code>Get-ItemProperty -Path HKLM:\\SYSTEM\\CurrentControlSet\\Control\\SecureBoot\\State</code> — disabled without explanation is a major red flag.</li>
+<li><strong>FTK Imager:</strong> Forensic imaging of the ESP. Check file timestamps — on clean systems, EFI files have installation-time dates.</li>
+<li><strong>CHIPSEC / UEFITool:</strong> Deep firmware analysis. UEFITool parses firmware images to reveal all embedded EFI modules including unauthorized ones.</li>
+</ul>`
+    };
+
+    function openKB(id) {
+        const content = kbContent[id];
+        if (!content) return;
+        document.getElementById('kbModalBody').innerHTML = content;
+        document.getElementById('kbModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeKB() {
+        document.getElementById('kbModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    function closeKBIfOutside(e) {
+        if (e.target === document.getElementById('kbModal')) closeKB();
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeKB(); });
+    </script>
+</body>
+</html>

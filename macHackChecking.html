@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mac Hack Checking Guide</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="nav-bar">
+        <div class="logo">Forensic Guide</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="windowsHackChecking.html" class="nav-link">Win Checking</a>
+            <a href="macHackChecking.html" class="nav-link">Mac Checking</a>
+            <a href="linuxHackChecking.html" class="nav-link">Linux Checking</a>
+            <a href="altChecking.html" class="nav-link">Alt Checking</a>
+            <a href="knowledgeBase.html" class="nav-link">Knowledge Base</a>
+            <a href="tools.html" class="nav-link">Tools</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>Mac Hack Checking Workflow</h1>
+            <p>Forensic protocols and shell commands for macOS screenshares.</p>
+        </header>
+
+        <section class="glass-panel">
+            <h2>Phase 1: Environment & Limitations</h2>
+            <p>Unlike Windows, macOS does not have Prefetch, BAM, or a USN Journal. The primary forensic artifacts are hidden application support directories, terminal history, system logs, and process inspection. You will rely almost entirely on terminal commands — ensure the suspect opens Terminal and expands the window fully before you begin.</p>
+            <div class="alert warning">
+                <strong>Important:</strong> Confirm the macOS version and architecture first. Apple Silicon (M1/M2/M3) and Intel Macs have different library paths and dylib behavior.
+            </div>
+            <pre><code>uname -m && sw_vers</code></pre>
+            <button class="btn copy-btn" data-copy="uname -m && sw_vers">Copy Command</button>
+        </section>
+
+        <section class="glass-panel">
+            <h2>Phase 2: Hidden Minecraft Directories</h2>
+            <p>macOS hides the <code>Library</code> folder by default. Navigate via Terminal or the "Go to Folder" shortcut (Cmd + Shift + G). The <code>-laR</code> flag shows hidden files, ownership details, modification times, and recursively lists all subdirectories.</p>
+
+            <h3>Vanilla Minecraft</h3>
+            <pre><code>cd ~/Library/Application\ Support/minecraft/mods && ls -laR</code></pre>
+            <button class="btn copy-btn" data-copy="cd ~/Library/Application\ Support/minecraft/mods && ls -laR">Copy Command</button>
+            <p>Look for recently modified <code>.jar</code> files or hidden folders starting with a dot (e.g., <code>.meteor</code>, <code>.wurst</code>). Check the modification timestamps carefully — a mod modified today on a game installed months ago is suspicious.</p>
+
+            <h3>Lunar Client</h3>
+            <pre><code>cd ~/.lunarclient/offline/multiver && ls -la</code></pre>
+            <button class="btn copy-btn" data-copy="cd ~/.lunarclient/offline/multiver && ls -la">Copy Command</button>
+
+            <h3>Check All Hidden Directories in Home</h3>
+            <p>List all hidden dot-folders in the home directory to find unusual client directories:</p>
+            <pre><code>ls -la ~/ | grep "^\."</code></pre>
+            <button class="btn copy-btn" data-copy="ls -la ~/ | grep &quot;^\.&quot;">Copy Command</button>
+
+            <h3>Check Minecraft Libraries for Tampering</h3>
+            <p>Some cheats replace legitimate library JARs. Check modification dates on core libraries:</p>
+            <pre><code>find ~/Library/Application\ Support/minecraft/libraries -name "*.jar" -newer ~/Library/Application\ Support/minecraft/launcher_profiles.json -type f</code></pre>
+            <button class="btn copy-btn" data-copy="find ~/Library/Application\ Support/minecraft/libraries -name &quot;*.jar&quot; -newer ~/Library/Application\ Support/minecraft/launcher_profiles.json -type f">Copy Command</button>
+            <p>Any library JAR newer than the launcher profiles file (which was set at install time) has been modified after installation — immediately suspicious.</p>
+        </section>
+
+        <section class="glass-panel">
+            <h2>Phase 3: Terminal History Analysis</h2>
+            <p>This is the most important phase on macOS. Cheaters may use terminal commands to inject dylib files, delete logs, or launch java agents. The history survives even after the cheat files are deleted.</p>
+
+            <h3>Check ZSH / Bash History</h3>
+            <pre><code>cat ~/.zsh_history; cat ~/.bash_history</code></pre>
+            <button class="btn copy-btn" data-copy="cat ~/.zsh_history; cat ~/.bash_history">Copy Command</button>
+
+            <h3>Search for Suspicious Commands Specifically</h3>
+            <pre><code>grep -i -E 'rm|wget|curl|chmod|mv|DYLD_INSERT_LIBRARIES|javaagent|dylib|inject' ~/.zsh_history ~/.bash_history 2>/dev/null</code></pre>
+            <button class="btn copy-btn" data-copy="grep -i -E 'rm|wget|curl|chmod|mv|DYLD_INSERT_LIBRARIES|javaagent|dylib|inject' ~/.zsh_history ~/.bash_history 2>/dev/null">Copy Command</button>
+
+            <h3>What to look for:</h3>
+            <ul>
+                <li><strong>History deletion:</strong> <code>history -c</code>, <code>rm ~/.zsh_history</code>, or <code>cat /dev/null > ~/.zsh_history</code> — these are immediate bans.</li>
+                <li><strong>DYLD_INSERT_LIBRARIES:</strong> macOS's equivalent of LD_PRELOAD. Used to force-load a dylib into a process at launch: <code>DYLD_INSERT_LIBRARIES=/path/to/cheat.dylib java ...</code></li>
+                <li><strong>-javaagent flag:</strong> <code>java -javaagent:/path/to/cheat.jar -jar minecraft.jar</code> — loads an arbitrary JAR before anti-cheat initializes.</li>
+                <li><strong>Deleting files before the SS:</strong> <code>rm -rf ~/Downloads/Vape*</code>, <code>rm -rf ~/.wurst</code>, etc.</li>
+                <li><strong>curl/wget to download files:</strong> Especially to <code>/tmp</code> or hidden directories shortly before the session.</li>
+            </ul>
+
+            <div class="alert warning">
+                <strong>Empty history:</strong> If both history files are empty or don't exist on a system the user claims to have used Minecraft on recently, they likely cleared history. Treat as suspicious.
+            </div>
+        </section>
+
+        <section class="glass-panel">
+            <h2>Phase 4: Process and File System Activity</h2>
+
+            <h3>Active Java Processes</h3>
+            <pre><code>ps -ef | grep java</code></pre>
+            <button class="btn copy-btn" data-copy="ps -ef | grep java">Copy Command</button>
+            <p>Inspect the full execution string. Look for suspicious <code>-javaagent</code> flags, non-standard classpath directories, or libraries loading from <code>/tmp</code> or user home instead of the official Minecraft libraries path.</p>
+
+            <h3>Recent File Modifications (Last 60 Minutes)</h3>
+            <pre><code>find ~/ -mmin -60 -type f -not -path "*/Library/Caches/*" -not -path "*/Library/Logs/*" 2>/dev/null</code></pre>
+            <button class="btn copy-btn" data-copy="find ~/ -mmin -60 -type f -not -path &quot;*/Library/Caches/*&quot; -not -path &quot;*/Library/Logs/*&quot; 2>/dev/null">Copy Command</button>
+            <p>This searches for any file modified in the last 60 minutes, excluding noisy cache and log folders. If they just deleted a cheat or moved files, metadata updates will appear here. Adjust <code>-60</code> to a wider window if the session started longer ago.</p>
+
+            <h3>Check /tmp for Cheat Artifacts</h3>
+            <pre><code>ls -laR /tmp/ 2>/dev/null | head -60</code></pre>
+            <button class="btn copy-btn" data-copy="ls -laR /tmp/ 2>/dev/null | head -60">Copy Command</button>
+            <p>Ghost clients and loaders frequently extract payloads to <code>/tmp</code> before injection. Check for any <code>.jar</code>, <code>.dylib</code>, or suspicious executables here.</p>
+
+            <h3>Check Loaded Dylibs in Java Process</h3>
+            <p>Get the PID of the Minecraft process from the <code>ps</code> command above, then check what dynamic libraries it has loaded:</p>
+            <pre><code>vmmap $(pgrep -n java) 2>/dev/null | grep -i "\.dylib" | grep -v "/usr/lib\|/System\|minecraft\|jdk\|jre"</code></pre>
+            <button class="btn copy-btn" data-copy="vmmap $(pgrep -n java) 2>/dev/null | grep -i &quot;\.dylib&quot; | grep -v &quot;/usr/lib\|/System\|minecraft\|jdk\|jre&quot;">Copy Command</button>
+            <p>Any <code>.dylib</code> loaded from the user's home directory, <code>/tmp</code>, or <code>Downloads</code> is a major red flag. Legitimate Minecraft libraries come from the JDK and system paths.</p>
+        </section>
+
+        <section class="glass-panel">
+            <h2>Phase 5: System Integrity & Security Logs</h2>
+
+            <h3>Check System Integrity Protection (SIP) Status</h3>
+            <pre><code>csrutil status</code></pre>
+            <button class="btn copy-btn" data-copy="csrutil status">Copy Command</button>
+            <p>SIP should be <code>enabled</code>. If SIP is disabled, the user can modify protected system directories and inject code in ways that would be blocked otherwise. SIP disabled without a legitimate development reason is suspicious.</p>
+
+            <h3>Recent System Logs</h3>
+            <pre><code>log show --last 1h --predicate 'process == "java"' 2>/dev/null | tail -50</code></pre>
+            <button class="btn copy-btn" data-copy="log show --last 1h --predicate 'process == &quot;java&quot;' 2>/dev/null | tail -50">Copy Command</button>
+            <p>This shows system log entries for Java processes in the last hour. Look for unusual library loads, crash reports, or security framework warnings that could indicate injection attempts.</p>
+
+            <h3>Gatekeeper / Security Assessment</h3>
+            <p>Check if the user has bypassed Gatekeeper to run unsigned executables:</p>
+            <pre><code>spctl --status</code></pre>
+            <button class="btn copy-btn" data-copy="spctl --status">Copy Command</button>
+            <p>If Gatekeeper is disabled (<code>assessments disabled</code>), the user can run unsigned and potentially malicious code without macOS warnings.</p>
+
+            <h3>Check USB Device History</h3>
+            <pre><code>system_profiler SPUSBDataType 2>/dev/null | grep -A5 "Product ID\|Vendor ID\|Serial Number"</code></pre>
+            <button class="btn copy-btn" data-copy="system_profiler SPUSBDataType 2>/dev/null | grep -A5 &quot;Product ID\|Vendor ID\|Serial Number&quot;">Copy Command</button>
+        </section>
+
+        <section class="glass-panel">
+            <h2>Phase 6: Mouse Software and Macros</h2>
+            <p>Check the Applications folder for Logitech G Hub, Razer Synapse, or third-party macro tools like Keyboard Maestro. Inspect any profiles tied to Minecraft.</p>
+            <pre><code>ls /Applications/ | grep -i "logitech\|razer\|corsair\|glorious\|maestro\|macro"</code></pre>
+            <button class="btn copy-btn" data-copy="ls /Applications/ | grep -i &quot;logitech\|razer\|corsair\|glorious\|maestro\|macro&quot;">Copy Command</button>
+            <p>If macro software is found, open it and inspect profiles for any rapid-click macros bound to left-click with exact, non-human millisecond intervals.</p>
+
+            <h3>Check for Cron Jobs / Launch Agents (Persistence)</h3>
+            <p>Some cheats install persistence mechanisms to survive reboots. Check for unauthorized launch agents:</p>
+            <pre><code>ls -la ~/Library/LaunchAgents/ 2>/dev/null
+ls -la /Library/LaunchAgents/ 2>/dev/null</code></pre>
+            <button class="btn copy-btn" data-copy="ls -la ~/Library/LaunchAgents/ 2>/dev/null; ls -la /Library/LaunchAgents/ 2>/dev/null">Copy Command</button>
+            <p>Legitimate LaunchAgents come from known software (Google, Adobe, Dropbox). Any <code>.plist</code> file here with an unfamiliar name or pointing to a script in a temp/home directory warrants investigation.</p>
+        </section>
+
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

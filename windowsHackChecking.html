@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows Hack Checking Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .service-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        .service-table th { background: rgba(99,102,241,0.15); color: #a5b4fc; text-align: left; padding: 0.6rem 1rem; font-size: 0.9rem; border-bottom: 1px solid var(--surface-border); }
+        .service-table td { padding: 0.55rem 1rem; font-size: 0.88rem; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--text-secondary); vertical-align: top; }
+        .service-table tr:hover td { background: rgba(255,255,255,0.02); }
+        .service-table td:first-child { color: #c7d2fe; font-family: 'Consolas', monospace; font-size: 0.85rem; white-space: nowrap; }
+        .regex-block { background: #000; border: 1px solid var(--surface-border); border-radius: 8px; padding: 1rem; margin: 0.75rem 0; }
+        .regex-block code { background: none; padding: 0; color: #a5b4fc; font-size: 0.95rem; display: block; word-break: break-all; }
+        .regex-block .regex-label { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.4rem; display: block; }
+    </style>
+</head>
+<body>
+    <nav class="nav-bar">
+        <div class="logo">Forensic Guide</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="windowsHackChecking.html" class="nav-link">Win Checking</a>
+            <a href="macHackChecking.html" class="nav-link">Mac Checking</a>
+            <a href="linuxHackChecking.html" class="nav-link">Linux Checking</a>
+            <a href="altChecking.html" class="nav-link">Alt Checking</a>
+            <a href="knowledgeBase.html" class="nav-link">Knowledge Base</a>
+            <a href="tools.html" class="nav-link">Tools</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>Windows Hack Checking Workflow</h1>
+            <p>A step-by-step methodology for exposing modifications and bypasses on Windows systems.</p>
+        </header>
+
+        <!-- PHASE 0 -->
+        <section class="glass-panel">
+            <h2>Phase 0: Rules & SS Timeline</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>SS Timeline</h3>
+                    <ul>
+                        <li>Wait for them to finish their fight, then <code>/freeze</code>.</li>
+                        <li>Ask if they want to admit for a shorter ban. If yes, ban and screenshot.</li>
+                        <li>If no, send an AnyDesk link via Discord/Telegram.</li>
+                        <li>Once connected, SS them. Unfreeze if clean, ban if cheating.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Screensharer Rules</h3>
+                    <ul>
+                        <li>Do not browse personal files without initial suspicion.</li>
+                        <li>Do not ban for simply <em>having</em> a cheat on their PC unless it was active/executed.</li>
+                        <li>Do not download malicious files such as trojans.</li>
+                        <li>Respect the person being SS'd and explain what each tool does.</li>
+                        <li>Do not ban for jokingly admitting.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>General Rules</h3>
+                    <ul>
+                        <li>Clearing the recycle bin after launch is bannable.</li>
+                        <li>Using illegal modifications including macros is bannable.</li>
+                        <li>A PC so degraded it cannot be SS'd is bannable.</li>
+                        <li>Having critical Windows services turned off is bannable.</li>
+                        <li>Unplugging a USB or having a FAT32 drive is bannable.</li>
+                        <li>Suspect must not touch mouse/keyboard unless asked.</li>
+                    </ul>
+                </div>
+            </div>
+            <br>
+            <div class="alert warning">
+                <strong>Important:</strong> ALWAYS record the entire screensharing session. Ensure Windows Defender and all third-party Antivirus software are disabled before running tools. All commands are run in CMD or CMD as Administrator — never in PowerShell directly.
+            </div>
+        </section>
+
+        <!-- PHASE 1 -->
+        <section class="glass-panel">
+            <h2>Phase 1: Service Checker</h2>
+            <p>Run this first. It verifies that all critical logging and system services are running, checks event log and prefetch state, and reports the recycle bin. Any disabled service from the list below is an <strong>immediate ban</strong>.</p>
+            <pre><code>powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/praiselily/lilith-ps/refs/heads/main/Services.ps1)</code></pre>
+            <button class="btn copy-btn" data-copy="powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/praiselily/lilith-ps/refs/heads/main/Services.ps1)">Copy Command</button>
+
+            <h3>Critical Services — Disabled = Immediate Ban</h3>
+            <p>If any of these are stopped or disabled, the user has tampered with Windows to prevent forensic logging. There is no legitimate reason for any of these to be off on a gaming PC.</p>
+            <table class="service-table">
+                <thead><tr><th>Service Name</th><th>Display Name</th><th>Why It Matters</th></tr></thead>
+                <tbody>
+                    <tr><td>SysMain</td><td>Superfetch / SysMain</td><td>Generates Prefetch (.pf) files that log every executed program and its run count. Disabling this wipes your ability to track what ran.</td></tr>
+                    <tr><td>PcaSvc</td><td>Program Compatibility Assistant</td><td>Logs application execution paths into DPS memory strings. Disabling eliminates a key execution record source.</td></tr>
+                    <tr><td>DPS</td><td>Diagnostic Policy Service</td><td>Records executed file paths in its memory — a major cross-reference for confirming program executions, especially when Prefetch is cleared.</td></tr>
+                    <tr><td>EventLog</td><td>Windows Event Log</td><td>Logs everything from login events to process creation. Without it, nearly all audit trails are gone.</td></tr>
+                    <tr><td>Schedule</td><td>Task Scheduler</td><td>Manages scheduled tasks. Cheats sometimes use Task Scheduler for persistence or launching; disabling it can hide that activity.</td></tr>
+                    <tr><td>Bam</td><td>Background Activity Moderator Driver</td><td>Registry-based execution tracker. Logs the full path and timestamp of every executable run. Disabling removes another independent execution log.</td></tr>
+                    <tr><td>Dusmsvc</td><td>Data Usage</td><td>Tracks per-app network usage. Referenced in thread suspension bypasses targeting cdpusersvc chains.</td></tr>
+                    <tr><td>Appinfo</td><td>Application Information</td><td>Required for UAC elevation. Disabling it can indicate attempts to suppress elevation prompts that would appear during cheat execution.</td></tr>
+                    <tr><td>CDPSvc</td><td>Connected Devices Platform</td><td>Logs device activity. The associated cdpusersvc_[numbers] process is targeted by thread suspension bypasses.</td></tr>
+                    <tr><td>DcomLaunch</td><td>DCOM Server Process Launcher</td><td>Core infrastructure service. JARParser checks DcomLaunch strings for executed JAR paths — disabling it would break this detection.</td></tr>
+                    <tr><td>PlugPlay</td><td>Plug and Play</td><td>Manages device connections. Disabling it can suppress USB connection events used to track external drive use.</td></tr>
+                    <tr><td>wsearch</td><td>Windows Search</td><td>Indexes files. Relevant for detecting indexed cheat files and tracking file system activity patterns.</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Additional Flags Reported by the Script</h3>
+            <p>Beyond the services above, the checker also reports these states. <strong>Prefetch Disabled is an automatic ban.</strong> The others are contextual flags that need additional investigation:</p>
+            <ul>
+                <li><strong>Prefetch Disabled:</strong> Automatic ban. If <code>HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters\EnablePrefetcher</code> is set to 0, the user manually disabled Prefetch to suppress .pf file creation. No legitimate reason exists.</li>
+                <li><strong>PowerShell Logging Enabled:</strong> If Script Block Logging is enabled, it means someone turned it on — potentially to log their own commands for review, or a prior script enabled it. Check the event logs for Event IDs 4103/4104 to see what PowerShell commands were run.</li>
+                <li><strong>Activities Cache Enabled:</strong> Windows Timeline is active, meaning app usage history may be stored in <code>%LocalAppData%\ConnectedDevicesPlatform\</code>. Worth cross-referencing with BAM.</li>
+                <li><strong>USN Journal Cleared (Event ID 3079):</strong> Ban. Running <code>fsutil usn deletejournal</code> generates this event. The Journal is the primary record of all filesystem changes — deliberately clearing it is direct evidence tampering.</li>
+                <li><strong>Event Logs Cleared (Event ID 1102):</strong> Ban. Clearing the Security event log produces Event ID 1102. This removes audit records of logins, process creation, and file access.</li>
+                <li><strong>Recycle Bin recently modified:</strong> If the <code>$Recycle.Bin</code> modification timestamp aligns with the freeze time, the user likely just emptied it. Immediate ban.</li>
+            </ul>
+            <div class="alert info">
+                <strong>Thread Suspension Note:</strong> A service can appear "Running" while its internal threads are suspended, silently disabling its logging function. This passes the service check. Confirm with System Informer in Phase 9.
+            </div>
+        </section>
+
+        <!-- PHASE 2 -->
+        <section class="glass-panel">
+            <h2>Phase 2: Mod Analyzer</h2>
+            <p>Run the Mod Analyzer before downloading the full tool suite. This script reads the running Minecraft process to inspect loaded JVM arguments, identifies disallowed or suspicious mods in the active classpath, and flags anomalies like unknown <code>-javaagent</code> entries.</p>
+
+            <h3>MeowModAnalyzer (Tonynoh)</h3>
+            <pre><code>powershell -ExecutionPolicy Bypass -Command "Invoke-Expression (Invoke-RestMethod 'https://raw.githubusercontent.com/MeowTonynoh/MeowModAnalyzer/main/MeowModAnalyzer.ps1')"</code></pre>
+            <button class="btn copy-btn" data-copy="powershell -ExecutionPolicy Bypass -Command &quot;Invoke-Expression (Invoke-RestMethod 'https://raw.githubusercontent.com/MeowTonynoh/MeowModAnalyzer/main/MeowModAnalyzer.ps1')&quot;">Copy Command</button>
+
+            <h3>YarpModAnalyzer (YarpLetapStan)</h3>
+            <pre><code>powershell -ExecutionPolicy Bypass -Command "Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/YarpLetapStan/PowershellScripts/refs/heads/main/YarpsModAnalyzer6.0.ps1)"</code></pre>
+            <button class="btn copy-btn" data-copy="powershell -ExecutionPolicy Bypass -Command &quot;Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/YarpLetapStan/PowershellScripts/refs/heads/main/YarpsModAnalyzer6.0.ps1)&quot;">Copy Command</button>
+
+            <h3>What to look for:</h3>
+            <ul>
+                <li><strong>Disallowed mods flagged:</strong> Any mod explicitly identified as a banned cheat client.</li>
+                <li><strong>Mods loaded from unexpected paths:</strong> JARs loading from <code>%TEMP%</code>, <code>Downloads</code>, or hidden directories rather than <code>.minecraft\mods</code>.</li>
+                <li><strong>Unknown -javaagent flag:</strong> <code>-javaagent:/path/to/file.jar</code> pointing to an unrecognized file is a primary ghost client injection technique — it loads arbitrary code at JVM startup before anti-cheat initializes.</li>
+                <li><strong>Classpath anomalies:</strong> Entries in the JVM classpath that don't correspond to any mod in the mods folder.</li>
+            </ul>
+        </section>
+
+        <!-- PHASE 3 -->
+        <section class="glass-panel">
+            <h2>Phase 3: Tool Collection</h2>
+            <p>Download the full suite of forensic tools using the SSTools collector. This populates <code>C:\SSTools</code> with everything needed for the remaining phases.</p>
+            <pre><code>powershell -ExecutionPolicy Bypass -Command "Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Lafferrr/SSTools/main/SSTools.ps1' -UseBasicParsing).Content"</code></pre>
+            <button class="btn copy-btn" data-copy="powershell -ExecutionPolicy Bypass -Command &quot;Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Lafferrr/SSTools/main/SSTools.ps1' -UseBasicParsing).Content&quot;">Copy Command</button>
+            <p>Tools are placed in <code>C:\SSTools</code>. This includes JarParser, BAMParser, MacroScanner, Strings, JournalTrace, System Informer, and supporting utilities.</p>
+        </section>
+
+        <!-- PHASE 4 -->
+        <section class="glass-panel">
+            <h2>Phase 4: JarParser Analysis</h2>
+            <p>JarParser scans Prefetch records and DcomLaunch memory strings to find all <code>.jar</code> files that have been executed on the system since logon. Crucially, <strong>it ignores the mods folder</strong> — its output reflects JARs that were actually run by the JVM externally, not the contents of any folder.</p>
+
+            <h3>Interpreting the output (see Image 1 reference):</h3>
+            <ul>
+                <li>The tool reports its logon time cutoff — only results after that time are shown.</li>
+                <li>It checks DcomLaunch for strings containing <code>-jar</code>. If no strings are found there, it moves on.</li>
+                <li>It then runs a USN Journal analysis for JAVAW/JAVA Prefetch file deletions.</li>
+                <li>The key output line is <strong>"Total JAVA/JAVAW .pf delete/rename events after logon time."</strong> Any number above 0 means Prefetch files for Java were tampered with after login.</li>
+            </ul>
+
+            <h3>What is a Flag:</h3>
+            <ul>
+                <li><strong>A .pf delete/rename event is reported:</strong> The user deleted or renamed a Prefetch file for <code>JAVAW.EXE</code> after logging in — direct evidence of evidence destruction. Immediate ban.</li>
+                <li><strong>A known cheat JAR appears in the output:</strong> Any JAR name that is a recognized cheat client (e.g., <code>VapeV4.jar</code>, <code>MeteorClient.jar</code>) being listed confirms it was externally executed. Not every JAR listed is a cheat, but any that is a recognized client name is grounds for a ban.</li>
+            </ul>
+            <div class="alert warning">
+                <strong>Note:</strong> JARParser output showing a JAR was executed does not mean the file still exists. The trace in Prefetch/DcomLaunch persists after deletion.
+            </div>
+        </section>
+
+        <!-- PHASE 5 -->
+        <section class="glass-panel">
+            <h2>Phase 5: USN Journal Trace</h2>
+            <p>The USN (Update Sequence Number) Journal records every filesystem change on NTFS — creations, deletions, renames, data overwrites. It is difficult to fully clear without leaving its own trace. Focus on the timeframe around the start of the screenshare.</p>
+
+            <h3>What to do:</h3>
+            <p>Run JournalTrace. Filter for extensions: <code>.jar</code>, <code>.exe</code>, <code>.dll</code>, <code>.pf</code>, <code>.lnk</code>. Focus on the timeframe around when the SS started.</p>
+
+            <h3>What is Normal:</h3>
+            <p>Game logs updating (<code>latest.log</code>), OS-native temp file creation/deletion, launcher cache writes.</p>
+
+            <h3>What is a Flag:</h3>
+            <ul>
+                <li><strong>FILE_DELETE</strong> on a suspicious file right after the freeze — <code>clicker.exe</code>, <code>VapeV4.jar</code>, etc.</li>
+                <li><strong>BASIC_INFO_CHANGE</strong> on <code>C:\Windows\Prefetch\*</code> files: The user set Prefetch files to Read-Only to freeze their timestamps and suppress new logging entries.</li>
+                <li><strong>RENAME_OLD_NAME / RENAME_NEW_NAME pair at the same timestamp:</strong> A file was renamed to disguise it — e.g., <code>cheat.exe</code> → <code>svchost.exe</code>. Or two files swapped locations to make a cheat appear legitimate.</li>
+                <li><strong>STREAM_CHANGE on a benign file:</strong> May indicate an Alternate Data Stream (ADS) being created to hide a payload inside an innocent host file.</li>
+                <li><strong>Journal cleared (Event ID 3079):</strong> Ban. Running <code>fsutil usn deletejournal</code> is deliberate evidence destruction.</li>
+            </ul>
+        </section>
+
+        <!-- PHASE 6 -->
+        <section class="glass-panel">
+            <h2>Phase 6: BAM Parser</h2>
+            <p>BAM Parser reads the Background Activity Moderator registry key (<code>HKLM\SYSTEM\CurrentControlSet\Services\bam\State\UserSettings\{SID}</code>) and produces a clean report of every executable path that was run, when it was last run, and whether it ran in the current logon session.</p>
+            <p>The parser corrects device paths (e.g., <code>\Device\HarddiskVolume3\</code>) to readable drive letters, performs digital signature checks on each file, flags deleted files, and detects known cheat signatures (e.g., Slinky, Vape). It also cross-references the USN Journal for any file replacements.</p>
+
+            <h3>What to look at:</h3>
+            <ul>
+                <li><strong>Flagged files:</strong> The parser directly highlights files matching known cheat client signatures. These are your primary hits.</li>
+                <li><strong>Not Signed / Unsigned:</strong> Any executable that is not digitally signed and was run in the current session is suspicious. Legitimate software is almost always signed.</li>
+                <li><strong>In Instance (ran in current logon):</strong> Focus on these — these are files executed since the user last logged in, meaning during their active Minecraft session.</li>
+                <li><strong>Common BAM flags to look for:</strong> Custom unsigned <code>.exe</code> files, Prestige Client injector entries, 198Macros, or any path pointing to <code>Downloads</code>, <code>%TEMP%</code>, or a hidden directory.</li>
+                <li><strong>Deleted:</strong> A file that ran but no longer exists on disk — the user executed and deleted it. Strong evidence of cheating if the path or name is suspicious.</li>
+            </ul>
+            <div class="alert info">
+                <strong>Also check:</strong> <a href="https://github.com/Orbdiff/BAMReveal/" target="_blank">BAMReveal (Orbdiff)</a> provides an additional view into BAM data with extended analysis capabilities.
+            </div>
+        </section>
+
+        <!-- PHASE 7 -->
+        <section class="glass-panel">
+            <h2>Phase 7: MacroScanner & Imports Checker</h2>
+
+            <h3>MacroScanner</h3>
+            <p>MacroScanner is a dedicated macro detection tool. It performs several checks automatically:</p>
+            <ul>
+                <li><strong>Script file scanning:</strong> Scans the system for script files with extensions like <code>.ahk</code> (AutoHotkey), <code>.py</code> (Python), and others commonly used to write click macros. It then analyzes the contents of those files for keywords associated with auto-clicking or input automation.</li>
+                <li><strong>Active and recently run scripts:</strong> Checks for scripts that are currently running or were recently executed.</li>
+                <li><strong>Gaming software folder check:</strong> Scans for Logitech G Hub, Razer Synapse, Corsair iCUE, and Glorious Core folders, and reports when they were last run.</li>
+                <li><strong>DWM.exe keyword scan:</strong> Scans <code>dwm.exe</code> memory for the keyword "Macro." Normal results include system strings like <code>configMacro</code>, <code>CRMacros</code>, <code>altmacro</code>, <code>endmacro</code>, <code>noaltmacro</code>. A flag would be finding something like <code>198Macros</code>, <code>Hunt Macros</code>, <code>Zenith Macros</code>, or any unrecognized/irregular macro software name in that memory space.</li>
+            </ul>
+
+            <h3>MeowImportsChecker</h3>
+            <p>This tool scans folders like <code>C:\</code> for files and folders, then analyzes their strings for patterns commonly used in external cheat and macro clients. It is NOT a mod analyzer — it operates on files outside the game, looking for cheat infrastructure present on the filesystem.</p>
+            <pre><code>powershell -ExecutionPolicy Bypass -Command "Invoke-Expression (Invoke-RestMethod 'https://raw.githubusercontent.com/MeowTonynoh/MeowImportsChecker/main/MeowImportsChecker.ps1')"</code></pre>
+            <button class="btn copy-btn" data-copy="powershell -ExecutionPolicy Bypass -Command &quot;Invoke-Expression (Invoke-RestMethod 'https://raw.githubusercontent.com/MeowTonynoh/MeowImportsChecker/main/MeowImportsChecker.ps1')&quot;">Copy Command</button>
+
+            <h3>Manual Mouse Software Check:</h3>
+            <p>If MacroScanner flagged gaming software, open it manually. Navigate to profiles tied to Minecraft or <code>javaw.exe</code>. A flag is any macro on left-click/attack with a hardcoded repeat loop — e.g., <code>Down → wait 10ms → Up → wait 10ms → Loop</code>. Human clicking cannot maintain a perfect fixed-ms interval.</p>
+        </section>
+
+        <!-- PHASE 8 -->
+        <section class="glass-panel">
+            <h2>Phase 8: Strings Checker</h2>
+            <p><strong>Laffer's Strings Checker</strong> (referred to as "Strings") is a dedicated tool that automatically analyzes the active <code>javaw.exe</code> process memory for cheat-related strings. This is different from bstrings, System Informer, or Echo's String Tool — it is purpose-built to bypass the need to manually filter every string, giving you a focused output of suspicious hits directly.</p>
+
+            <h3>What to do:</h3>
+            <p>Run Strings from <code>C:\SSTools</code> against the Minecraft process. Review the output for anything that wouldn't naturally appear in a legitimate game client.</p>
+
+            <h3>What is Normal (can appear, not necessarily a ban):</h3>
+            <ul>
+                <li>References like <code>accurateblockplacement</code>, <code>wurst</code>, <code>meteor</code>, or <code>argon</code> — these can be false flags from legitimate mods that reference other projects in metadata or class names.</li>
+                <li>Generic class names from Fabric/Forge APIs.</li>
+                <li>Standard Java library paths under <code>Program Files</code> or <code>.minecraft\libraries</code>.</li>
+            </ul>
+
+            <h3>What is a Flag:</h3>
+            <ul>
+                <li><strong>Blatant file paths:</strong> An Argon cheat file path (e.g., <code>C:\Users\User\argon\modules\KillAura.class</code>) means the cheat is actively loaded in memory — not a false flag.</li>
+                <li><strong>Chained cheat module names:</strong> <code>killaura</code>, <code>triggerbot</code>, <code>autocrystal</code>, <code>bhop</code>, <code>scaffold</code> appearing together in the same output indicates an active module list from a ghost client.</li>
+                <li><strong>Ghost client keybind patterns:</strong> Strings like <code>key.{}.toggle</code> or <code>key.{module}.bind</code> do not appear in any legitimate mod. These are ghost client keybind registrations.</li>
+                <li><strong>Cheat distribution URLs:</strong> Domain names pointing to known cheat sites (e.g., <code>doomsdayclient.com</code>) in an unexpected context.</li>
+                <li><strong>Base64 blobs or encoded payloads:</strong> Indicates a loader decoding a payload at runtime.</li>
+                <li><strong>Anything unnatural:</strong> If a string has no logical reason to appear in a clean Minecraft client, treat it as suspicious and cross-reference with Phase 9.</li>
+            </ul>
+            <div class="alert info">
+                <strong>Rule of thumb:</strong> A single client name reference might be a false flag from metadata. An actual <em>file path</em> to a cheat, a cluster of cheat module names, or <code>key.{}.toggle</code> patterns are evidence.
+            </div>
+        </section>
+
+        <!-- PHASE 9 -->
+        <section class="glass-panel">
+            <h2>Phase 9: System Informer & Thread Inspection</h2>
+            <p>System Informer with its kernel-mode driver allows deep inspection of service threads, process memory strings, and suspended threads used by advanced bypassers to silently disable logging while services appear "Running."</p>
+            <p>Open System Informer as Administrator with the kernel driver active. For each process below: right-click → Properties → Memory → check <strong>Hide free pages</strong> and <strong>Hide reserved pages</strong> → Strings tab, set minimum length to 4, check <strong>Extended Unicode</strong>, <strong>Mapped</strong>, and <strong>Image</strong>.</p>
+
+            <h3>DPS Process — Filter Regex</h3>
+            <p>The DPS process (<code>dps.dll</code> inside svchost) records paths of executed files. Use these filters to find suspicious executions. Each regex serves a different detection purpose:</p>
+
+            <div class="regex-block">
+                <span class="regex-label">Filters out .exe files — shows everything except standard executables</span>
+                <code>^!![A-Z]((?!Exe).)*$</code>
+                <button class="btn copy-btn" style="margin-top:0.5rem" data-copy="^!![A-Z]((?!Exe).)*$">Copy</button>
+            </div>
+
+            <div class="regex-block">
+                <span class="regex-label">Filters out .exe and .dll files</span>
+                <code>^\\device\\harddiskvolume((?!Exe|dll).)*$</code>
+                <button class="btn copy-btn" style="margin-top:0.5rem" data-copy="^\\device\\harddiskvolume((?!Exe|dll).)*$">Copy</button>
+            </div>
+
+            <div class="regex-block">
+                <span class="regex-label">Modified extension — finds non-.exe files executed from a disk volume path</span>
+                <code>^\\device\\harddiskvolume[0-99]\\((?!exe).)*$</code>
+                <button class="btn copy-btn" style="margin-top:0.5rem" data-copy="^\\device\\harddiskvolume[0-99]\\((?!exe).)*$">Copy</button>
+            </div>
+
+            <div class="regex-block">
+                <span class="regex-label">Localhost — shows connections or executions going through localhost</span>
+                <code>^\\device\\mup\\localhost\\*</code>
+                <button class="btn copy-btn" style="margin-top:0.5rem" data-copy="^\\device\\mup\\localhost\\*">Copy</button>
+            </div>
+
+            <h3>CSRSS Process — Filter Regex</h3>
+            <p>CSRSS tracks all process creation on the system. There are two CSRSS instances — use the correct one for each check:</p>
+
+            <div class="regex-block">
+                <span class="regex-label">For .exe paths — use the CSRSS with <strong>lower</strong> private bytes. Filter, then save dump to a folder and run through Paths Parser.</span>
+                <code>^[A-Z]:\\.+\.(exe)$</code>
+                <button class="btn copy-btn" style="margin-top:0.5rem" data-copy="^[A-Z]:\\.+\.(exe)$">Copy</button>
+            </div>
+
+            <div class="regex-block">
+                <span class="regex-label">For .dll paths — use the CSRSS with <strong>higher</strong> private bytes. Filter, then save dump to a folder and run through Paths Parser.</span>
+                <code>^[A-Z]:\\.+\.(dll)$</code>
+                <button class="btn copy-btn" style="margin-top:0.5rem" data-copy="^[A-Z]:\\.+\.(dll)$">Copy</button>
+            </div>
+
+            <div class="regex-block">
+                <span class="regex-label">Renamed Extension — finds files with non-standard extensions that were executed (modified extension bypass). Use on CSRSS with most bytes.</span>
+                <code>^[a-z]:.+\.((?!exe|pyd|manifest|dll|config|\\|cpl|microsoft-|shell).)*$</code>
+                <button class="btn copy-btn" style="margin-top:0.5rem" data-copy="^[a-z]:.+\.((?!exe|pyd|manifest|dll|config|\\|cpl|microsoft-|shell).)*$">Copy</button>
+            </div>
+
+            <h3>PcaSvc Process</h3>
+            <p>PcaSvc (Program Compatibility Assistant) also records application execution paths. Inspect its memory strings for paths to files in non-standard locations (Downloads, Temp, hidden directories). Any <code>.exe</code> path referencing a folder outside standard install paths (Program Files, Windows, minecraft directories) is suspicious. Cross-reference paths found here against BAM and DPS findings.</p>
+
+            <h3>Thread Suspension — What is a Flag:</h3>
+            <p>For each service-hosting svchost, go to Properties → Threads. If any thread with a start address in the service's core DLL is <strong>Suspended</strong>, the service is silently frozen without being "disabled." These are the thread-to-DLL mappings to check:</p>
+            <ul>
+                <li><strong>SysMain → <code>sechost.dll</code></strong> — Suspended = Prefetch logging frozen</li>
+                <li><strong>PcaSvc → <code>pcasvc.dll</code></strong> — Suspended = PCA execution recording frozen</li>
+                <li><strong>DPS → <code>dps.dll</code></strong> — Suspended = DPS path recording frozen</li>
+                <li><strong>EventLog → <code>wevtsvc.dll</code></strong> — Suspended = All event logging frozen</li>
+                <li><strong>dusmsvc → <code>wlanapi.dll</code></strong> — Suspended = Data usage tracking frozen</li>
+                <li><strong>cdpusersvc_[numbers] → <code>ucrtbase.dll</code></strong> — Suspended = CDP activity frozen</li>
+            </ul>
+
+            <h3>Memory Clearing Artifact:</h3>
+            <p>If someone used System Informer or a similar tool to manually wipe cheat strings from memory before the SS, they leave a trace. In processes like <code>dwm.exe</code>, <code>explorer.exe</code>, or <code>taskhostw.exe</code>, search for the pattern <code>) (0x</code>. A result like:</p>
+            <pre><code>name.exe (4684) (0x195c66a3000 - 0x195c66c7000)</code></pre>
+            <p>confirms that a memory region of that process was manually accessed. The process name, PID, and memory range are all recorded as a residual. This alone is strong grounds for a ban.</p>
+        </section>
+
+        <!-- PHASE 10 -->
+        <section class="glass-panel">
+            <h2>Phase 10: Advanced Checks</h2>
+            <p>For high-confidence suspects who passed earlier phases, or when initial results are inconclusive, apply these deeper checks.</p>
+
+            <h3>Alternate Data Streams (ADS)</h3>
+            <p>ADS allows entire executables to be hidden inside innocent files (e.g., <code>notes.txt:cheat.exe</code>). The host file's size appears normal in File Explorer.</p>
+            <pre><code>dir /r C:\Users\%username%\Downloads
+dir /r C:\Users\%username%\Desktop</code></pre>
+            <button class="btn copy-btn" data-copy="dir /r C:\Users\%username%\Downloads">Copy Command</button>
+            <p>Use <strong>AlternateStreamView</strong> (Nirsoft) for a full system scan. Any stream with significant file size attached to a small host file is suspicious. ADS creation generates <code>STREAM_CHANGE</code> events in the USN Journal.</p>
+
+            <h3>USB Device History</h3>
+            <p>Cheats loaded from USB and never written to the main drive leave minimal on-disk traces. Run USBDeview or inspect <code>HKLM\SYSTEM\CurrentControlSet\Enum\USBSTOR</code>. A FAT32 or exFAT external drive connected just before the freeze is an immediate ban — those filesystems have no journaling equivalent to NTFS, making deletions from them essentially untraceable.</p>
+
+            <h3>Cloud Storage Folders</h3>
+            <p>Inspect <code>C:\Users\%username%\OneDrive</code> and any Google Drive/Dropbox sync folders. A cheat stored in a cloud-synced folder can be deleted remotely by an accomplice from another device while the SS is ongoing, causing the file to vanish locally with minimal immediate traces.</p>
+
+            <h3>Kernel Live Dump (Fileless Detection)</h3>
+            <p>For suspected fileless or memory-injection cheats — where no files exist on disk — create a Kernel Live Dump via System Informer and analyze it with bstrings to find loader commands, encoded payloads, and download URLs that were executed entirely in memory:</p>
+            <pre><code>bstrings.exe -f "C:\Path\To\LiveKernelDump.DMP" --lr "(?i)(?:\b(?:powershell|cmd|wscript|cscript)\b|iwr|iex|invoke|encodedcommand|decoded|base64|github|pastebin|\.exe|\.bat|\.vbs)" -o ".\FilelessEvidence.txt"</code></pre>
+            <button class="btn copy-btn" data-copy='bstrings.exe -f "C:\Path\To\LiveKernelDump.DMP" --lr "(?i)(?:\b(?:powershell|cmd|wscript|cscript)\b|iwr|iex|invoke|encodedcommand|decoded|base64|github|pastebin|\.exe|\.bat|\.vbs)" -o ".\FilelessEvidence.txt"'>Copy Command</button>
+        </section>
+
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

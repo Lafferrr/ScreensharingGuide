@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forensic Tools - Forensic Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .tool-category {
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--surface-border);
+            padding-bottom: 0.5rem;
+        }
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: auto;
+            flex-wrap: wrap;
+        }
+        .info-btn {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+            border-color: rgba(245, 158, 11, 0.5);
+            font-weight: 700;
+        }
+        .info-btn:hover {
+            background: var(--warning);
+            color: #fff;
+            border-color: var(--warning);
+        }
+        .cmd-section pre {
+            margin-bottom: 0.5rem;
+        }
+        .cmd-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.3rem;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav-bar">
+        <div class="logo">Forensic Guide</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="windowsHackChecking.html" class="nav-link">Win Checking</a>
+            <a href="macHackChecking.html" class="nav-link">Mac Checking</a>
+            <a href="linuxHackChecking.html" class="nav-link">Linux Checking</a>
+            <a href="altChecking.html" class="nav-link">Alt Checking</a>
+            <a href="knowledgeBase.html" class="nav-link">Knowledge Base</a>
+            <a href="tools.html" class="nav-link active">Tools</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>Forensic Tools Repository</h1>
+            <p>The complete collection of tools, parsers, scripts, and download links for comprehensive PC checking.</p>
+        </header>
+
+        <!-- GUI TOOLS -->
+        <h2 class="tool-category">GUI Analyzers & External Tools (.exe / .jar)</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>System Informer</h3>
+                <p>Kernel-mode process manager for thread inspection, memory string analysis, and Kernel Live Dumps.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="https://github.com/winsiderss/systeminformer/releases/latest">Copy GitHub Link</button>
+                    <button class="btn icon-btn info-btn" data-title="System Informer" data-content="Open as Administrator with the kernel driver loaded. Use to inspect memory strings, detect suspended threads in logging services, and create Kernel Live Dumps for fileless detection analysis.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Detect It Easy (DiE)</h3>
+                <p>Static analysis for executables — entropy, packer detection, string extraction.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="https://github.com/horsicq/DIE-engine/releases/download/3.09/die_win64_portable_3.09_x64.zip">Copy .zip Link</button>
+                    <button class="btn icon-btn info-btn" data-title="Detect It Easy" data-content="Spots packers (UPX, Themida, VMProtect), suspicious imports, and measures file entropy. High entropy (>7.0) suggests a packed or encrypted payload. Crucial for analyzing suspicious executables.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Hayabusa</h3>
+                <p>Fast forensic timeline generator and threat-hunting tool for Windows Event Logs.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="https://github.com/Yamato-Security/hayabusa/releases/download/v3.3.0/hayabusa-3.3.0-win-x64.zip">Copy .zip Link</button>
+                    <button class="btn icon-btn info-btn" data-title="Hayabusa" data-content="Parses all Windows Event Logs using Sigma rules to produce a chronological timeline. Filter for PowerShell execution (Event IDs 4103/4104), log-clearing events (1102, 3079), and suspicious process creation.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Luyten</h3>
+                <p>Java decompiler — converts .class bytecode back into readable source code.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="https://github.com/deathmarine/Luyten/releases/tag/v0.5.4_Rebuilt_with_Latest_depenencies">Copy GitHub Link</button>
+                    <button class="btn icon-btn info-btn" data-title="Luyten" data-content="Drag and drop a suspicious .jar file. If all class/method names are single letters or random sequences, the mod is heavily obfuscated — a ban on most servers.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Recaf</h3>
+                <p>Java bytecode editor — decompile, inspect, and analyze .jar files.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="https://github.com/Col-E/Recaf/releases/download/2.21.14/recaf-2.21.14-J8-jar-with-dependencies.jar">Copy .jar Link</button>
+                    <button class="btn icon-btn info-btn" data-title="Recaf" data-content="More feature-rich than Luyten. Good for analyzing class imports, method calls, and obfuscation patterns in suspicious mods. Also useful for verifying mod authenticity against Modrinth.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>RedLotusAltChecker</h3>
+                <p>Automated GUI tool for scanning launcher configs to find Alt accounts.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="https://github.com/ItzIceHere/RedLotusAltChecker/releases/download/RL/RedLotusAltChecker.exe">Copy .exe Link</button>
+                    <button class="btn icon-btn info-btn" data-title="RedLotusAltChecker" data-content="Scans all launcher accounts.json files across Vanilla, Lunar, LabyMod, Prism, MultiMC, and TLauncher simultaneously. Extracts linked tokens and usernames.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>MeowDoomsdayFucker (Tonynoh)</h3>
+                <p>Specific detection tool for traces of the DoomsDay cheat client.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="https://github.com/MeowTonynoh/MeowDoomsdayFucker">Copy GitHub Link</button>
+                    <button class="btn icon-btn info-btn" data-title="MeowDoomsdayFucker" data-content="Scans for specific artifacts, file signatures, and registry traces left by the DoomsDay client infrastructure.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>BAMReveal (Orbdiff)</h3>
+                <p>Extended BAM data viewer with enhanced analysis capabilities.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="https://github.com/Orbdiff/BAMReveal/">Copy GitHub Link</button>
+                    <button class="btn icon-btn info-btn" data-title="BAMReveal" data-content="Provides an expanded view into the BAM registry data, complementing the standard BAM Parser with additional detail on executed file paths and timestamps.">!</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ECHO TOOLS -->
+        <h2 class="tool-category">Echo Tools (.exe)</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>Echo Journal Tool</h3>
+                <p>Parses and filters USN Journal logs efficiently via GUI.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="https://dl.echo.ac/tool/journal">Copy .exe Link</button>
+                    <button class="btn icon-btn info-btn" data-title="Echo Journal Tool" data-content="Recommended alternative to fsutil commands. Filter by extension (.jar, .exe, .pf) and reason (FILE_DELETE, BASIC_INFO_CHANGE, RENAME). Focus on the window around the SS start time.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Echo String Tool</h3>
+                <p>Scans multiple custom strings simultaneously against a selected process.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="https://dl.echo.ac/tool/strings">Copy .exe Link</button>
+                    <button class="btn icon-btn info-btn" data-title="Echo String Tool" data-content="Test custom string sets without needing to manually filter System Informer. Useful for scanning javaw.exe for cheat keywords like killaura, triggerbot, or autocrystal.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Echo UserAssist View</h3>
+                <p>GUI viewer for Windows UserAssist execution logs.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="https://dl.echo.ac/tool/userassist">Copy .exe Link</button>
+                    <button class="btn icon-btn info-btn" data-title="Echo UserAssist View" data-content="Shows GUI program execution history and automatically decodes the ROT-13 obfuscation Windows applies to UserAssist registry entries.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Echo USBDEVIEW</h3>
+                <p>USB history viewer showing connect/disconnect timestamps.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="https://dl.echo.ac/tool/usb">Copy .exe Link</button>
+                    <button class="btn icon-btn info-btn" data-title="Echo USBDEVIEW" data-content="Shows the latest plug/unplug times of all USB devices. A FAT32 storage device connected just before the freeze is an immediate ban.">!</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ERIC ZIMMERMAN -->
+        <h2 class="tool-category">Eric Zimmerman Tools (.exe)</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>bstrings</h3>
+                <p>Advanced string extraction and regex filtering from files and memory dumps.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="https://download.ericzimmermanstools.com/net9/bstrings.zip">Copy .zip Link</button>
+                    <button class="btn icon-btn info-btn" data-title="bstrings" data-content="Usage: bstrings.exe -f dump.dmp --lr &quot;(?i)(iex|encodedcommand|base64)&quot; -o output.txt. Excellent for parsing Kernel Live Dumps for fileless execution traces.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>PECmd</h3>
+                <p>Command-line Prefetch file parser with full loaded-file output.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="https://download.ericzimmermanstools.com/net9/PECmd.zip">Copy .zip Link</button>
+                    <button class="btn icon-btn info-btn" data-title="PECmd" data-content="Usage: PECmd.exe -f &quot;C:\Windows\Prefetch\RUNDLL32.EXE-47BCE4E9.pf&quot;. Reveals the DLL that Rundll32 or Regsvr32 executed — critical for detecting DLL injection.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>RECmd (Registry Explorer)</h3>
+                <p>Parses Windows Registry hives for offline analysis.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="https://download.ericzimmermanstools.com/net9/RECmd.zip">Copy .zip Link</button>
+                    <button class="btn icon-btn info-btn" data-title="RECmd" data-content="Usage: RECmd.exe -f &quot;NTUSER.DAT&quot; --csv .\Output. Parses UserAssist (auto-decodes ROT-13), BAM, RecentDocs, and OpenSavePidlMRU.">!</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- POWERSHELL SUITES -->
+        <h2 class="tool-category">PowerShell Collections & Suites</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>SSTools (Lafferr)</h3>
+                <p>Primary screensharing tool downloader. Populates <code>C:\SSTools</code>.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="powershell -ExecutionPolicy Bypass -Command &quot;Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Lafferrr/SSTools/main/SSTools.ps1' -UseBasicParsing).Content&quot;">Copy Cmd</button>
+                    <button class="btn icon-btn info-btn" data-title="SSTools" data-content="Downloads JarParser, BAMParser, MacroScanner, Strings Checker, JournalTrace, System Informer, and supporting utilities to C:\SSTools.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Lily's Collector</h3>
+                <p>Downloads tools with automatic AV exclusion to prevent deletion.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/praiselily/lilith-ps/refs/heads/main/Collector.ps1)">Copy Cmd</button>
+                    <button class="btn icon-btn info-btn" data-title="Lily's Collector" data-content="The AV exclusion ensures tools like BAM Parser run without Windows Defender deleting them mid-execution.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>AcousticVoids Screenshare</h3>
+                <p>Alternative screenshare tool suite loader.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="powershell -ExecutionPolicy Bypass -Command &quot;Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/piespeas/MyPowerShellScripts-ssing/main/Screenshare.ps1' -UseBasicParsing).Content&quot;">Copy Cmd</button>
+                    <button class="btn icon-btn info-btn" data-title="AcousticVoids" data-content="Fetches and runs a curated list of parsers as an alternative to SSTools.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Enr1c0o All-in-one</h3>
+                <p>Bundled script running multiple fast parsers sequentially.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/Enr1c0o/Powershell-Scripts/refs/heads/main/All-in-one.ps1)">Copy Cmd</button>
+                    <button class="btn icon-btn info-btn" data-title="All-in-one" data-content="Runs a variety of quick triage checks sequentially in a single script execution.">!</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MOD & CHEAT SCANNERS -->
+        <h2 class="tool-category">Mod & Cheat Specific Scanners</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>MeowModAnalyzer (Tonynoh)</h3>
+                <p>Analyzes the active Minecraft JVM process — arguments, classpath, and active mod list.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="powershell -ExecutionPolicy Bypass -Command &quot;Invoke-Expression (Invoke-RestMethod 'https://raw.githubusercontent.com/MeowTonynoh/MeowModAnalyzer/main/MeowModAnalyzer.ps1')&quot;">Copy Cmd</button>
+                    <button class="btn icon-btn info-btn" data-title="MeowModAnalyzer" data-content="Flags disallowed mods, unknown -javaagent entries, and suspicious classpath anomalies. Run while Minecraft is open.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>YarpModAnalyzer (YarpLetapStan)</h3>
+                <p>Alternative mod analyzer with extended detection signatures.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="powershell -ExecutionPolicy Bypass -Command &quot;Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/YarpLetapStan/PowershellScripts/refs/heads/main/YarpsModAnalyzer6.0.ps1)&quot;">Copy Cmd</button>
+                    <button class="btn icon-btn info-btn" data-title="YarpModAnalyzer" data-content="Run alongside MeowModAnalyzer for a second opinion on the active Minecraft process. Different signature sets may catch different cheats.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>MeowImportsChecker (Tonynoh)</h3>
+                <p>Scans C:\ for files/folders and analyzes strings for external cheat and macro client patterns.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="powershell -ExecutionPolicy Bypass -Command &quot;Invoke-Expression (Invoke-RestMethod 'https://raw.githubusercontent.com/MeowTonynoh/MeowImportsChecker/main/MeowImportsChecker.ps1')&quot;">Copy Cmd</button>
+                    <button class="btn icon-btn info-btn" data-title="MeowImportsChecker" data-content="NOT a mod analyzer. Scans the filesystem for cheat infrastructure outside the game — external loaders, injectors, macro clients. Looks for Java imports, JNI/JNA patterns, and known cheat signatures in files found on C:\.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>JAR Scanner (Lily)</h3>
+                <p>Detects hash identifiers, solid obfuscation, java agents, and native code in .jar files.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="powershell -ExecutionPolicy Bypass -Command &quot;iwr https://raw.githubusercontent.com/praiselily/JARScanner/refs/heads/main/JARScanner.ps1 | iex&quot;">Copy Cmd</button>
+                    <button class="btn icon-btn info-btn" data-title="JAR Scanner" data-content="Compares mods against Modrinth hashes and flags obfuscation patterns, Java agents, and native code dependencies. Useful for quickly vetting the mods folder.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>JARParser (orbdiff)</h3>
+                <p>Extracts executed .jar file traces from Prefetch and DcomLaunch strings.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/NoDiff-del/JARParser/refs/heads/main/JARParser.ps1)">Copy Cmd</button>
+                    <button class="btn icon-btn info-btn" data-title="JARParser" data-content="Lists JARs that were externally executed via the JVM (not the mods folder contents). Also reports JAVA/JAVAW .pf delete/rename events after logon — any such event is an immediate ban.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Faker Detections (Lily)</h3>
+                <p>Detects PC swap bypasses via WLAN, ARP, and MAC analysis.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="powershell -ExecutionPolicy Bypass -Command &quot;iwr https://raw.githubusercontent.com/praiselily/WeHateFakers/refs/heads/main/HotspotLogs.ps1 | iex&quot;">Copy Cmd</button>
+                    <button class="btn icon-btn info-btn" data-title="Faker Detections" data-content="Checks WLAN AutoConfig, ARP tables, and MAC address characteristics to detect PC swap and hotspot bypass techniques. Outputs a report to HTML.">!</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SYSTEM TRACE PARSERS -->
+        <h2 class="tool-category">System Trace Parsers (BAM, Prefetch, USN)</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>Spokwn BAM Parser</h3>
+                <p>Parses BAM registry key for executed file paths, timestamps, and digital signatures.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/spokwn/powershells/refs/heads/main/bamparser.ps1)">Copy Cmd</button>
+                    <button class="btn icon-btn info-btn" data-title="Spokwn BAM Parser" data-content="Corrects device paths to drive letters, gets last run time, checks if ran in current logon instance, performs digital signature checks, flags deleted files, and detects known cheat signatures (Slinky, Vape).">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>BAMReveal (Orbdiff)</h3>
+                <p>Extended BAM data viewer with additional analysis capabilities.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="https://github.com/Orbdiff/BAMReveal/">Copy GitHub Link</button>
+                    <button class="btn icon-btn info-btn" data-title="BAMReveal" data-content="Provides expanded BAM analysis complementing the standard BAM Parser.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Prefetch Integrity (bacanoicua)</h3>
+                <p>Checks for missing or read-only Prefetch files indicating log tampering.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/bacanoicua/Screenshare/main/RedLotusPrefetchIntegrityAnalyzer.ps1)">Copy Cmd</button>
+                    <button class="btn icon-btn info-btn" data-title="Prefetch Integrity" data-content="Identifies .pf files that are missing (deleted) or have the read-only attribute set (to freeze timestamps). Both are evidence of Prefetch tampering.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Services / Uptime (Lily)</h3>
+                <p>Checks critical services, prefetch state, event log state, and recycle bin.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/praiselily/lilith-ps/refs/heads/main/Services.ps1)">Copy Cmd</button>
+                    <button class="btn icon-btn info-btn" data-title="Services Checker" data-content="Verifies SysMain, DPS, EventLog, PcaSvc, BAM, and others are running. Reports Prefetch enabled state, PowerShell logging, Activities Cache, and recent recycle bin activity.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Suspicious Scheduler (nolww)</h3>
+                <p>Parses scheduled tasks and flags unsigned apps masquerading as system tasks.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="powershell -Command &quot;Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; Invoke-Expression (Invoke-RestMethod 'https://raw.githubusercontent.com/nolww/project-mohr/refs/heads/main/SuspiciousScheduler.ps1')&quot;">Copy Cmd</button>
+                    <button class="btn icon-btn info-btn" data-title="Suspicious Scheduler" data-content="Creates a GUI of all scheduled tasks with signature checks. Flags unsigned executables masquerading as Task Manager entries — a common cheat persistence mechanism.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Hard Link Finder (Lily)</h3>
+                <p>Scans the MFT for hardlinks modified in the current boot or last hour.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="https://github.com/praiselily/HardlinkFinder">Copy Repo Link</button>
+                    <button class="btn icon-btn info-btn" data-title="Hard Link Finder" data-content="NTFS hardlinks allow multiple filenames pointing to the same data. Cheaters use them to hide cheat files as apparent duplicates of system files. This tool finds hardlinks modified recently.">!</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Common Directories (Lily)</h3>
+                <p>Scans System32, SysWOW64, and %temp% for non-Microsoft-signed files.</p>
+                <div class="btn-group">
+                    <button class="btn copy-btn" data-copy="powershell -Command &quot;Set-ExecutionPolicy Bypass -Scope Process; Invoke-Expression (Invoke-RestMethod 'https://raw.githubusercontent.com/praiselily/lilith-ps/refs/heads/main/CommonDirectories.ps1')&quot;">Copy Cmd</button>
+                    <button class="btn icon-btn info-btn" data-title="Common Directories" data-content="Every file in System32, SysWOW64, and Temp should be Microsoft or Windows signed. Any unsigned file found here is highly suspicious — these are prime hiding locations for UEFI cheat components and loaders.">!</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CMD IMPORT SCRIPTS -->
+        <h2 class="tool-category">CMD Import Scripts (Run in CMD or CMD as Admin)</h2>
+        <p>All of the following are run directly in CMD — not PowerShell. Copy and paste into a CMD window.</p>
+        <div class="glass-panel cmd-section">
+            <h3>Service Checker (Lily)</h3>
+            <span class="cmd-label">Checks all critical services, prefetch state, event logs, and recycle bin.</span>
+            <pre><code>powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/praiselily/lilith-ps/refs/heads/main/Services.ps1)</code></pre>
+            <button class="btn copy-btn" data-copy="powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/praiselily/lilith-ps/refs/heads/main/Services.ps1)">Copy</button>
+
+            <h3>MeowModAnalyzer (Tonynoh)</h3>
+            <span class="cmd-label">Analyzes the running Minecraft JVM — arguments, classpath, active mods.</span>
+            <pre><code>powershell -ExecutionPolicy Bypass -Command "Invoke-Expression (Invoke-RestMethod 'https://raw.githubusercontent.com/MeowTonynoh/MeowModAnalyzer/main/MeowModAnalyzer.ps1')"</code></pre>
+            <button class="btn copy-btn" data-copy="powershell -ExecutionPolicy Bypass -Command &quot;Invoke-Expression (Invoke-RestMethod 'https://raw.githubusercontent.com/MeowTonynoh/MeowModAnalyzer/main/MeowModAnalyzer.ps1')&quot;">Copy</button>
+
+            <h3>YarpModAnalyzer (YarpLetapStan)</h3>
+            <span class="cmd-label">Alternative mod analyzer with different detection signatures.</span>
+            <pre><code>powershell -ExecutionPolicy Bypass -Command "Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/YarpLetapStan/PowershellScripts/refs/heads/main/YarpsModAnalyzer6.0.ps1)"</code></pre>
+            <button class="btn copy-btn" data-copy="powershell -ExecutionPolicy Bypass -Command &quot;Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/YarpLetapStan/PowershellScripts/refs/heads/main/YarpsModAnalyzer6.0.ps1)&quot;">Copy</button>
+
+            <h3>SSTools Collector (Lafferr)</h3>
+            <span class="cmd-label">Downloads the full tool suite to C:\SSTools.</span>
+            <pre><code>powershell -ExecutionPolicy Bypass -Command "Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Lafferrr/SSTools/main/SSTools.ps1' -UseBasicParsing).Content"</code></pre>
+            <button class="btn copy-btn" data-copy="powershell -ExecutionPolicy Bypass -Command &quot;Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Lafferrr/SSTools/main/SSTools.ps1' -UseBasicParsing).Content&quot;">Copy</button>
+
+            <h3>Lily's Collector</h3>
+            <span class="cmd-label">Downloads tools with AV exclusion.</span>
+            <pre><code>powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/praiselily/lilith-ps/refs/heads/main/Collector.ps1)</code></pre>
+            <button class="btn copy-btn" data-copy="powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/praiselily/lilith-ps/refs/heads/main/Collector.ps1)">Copy</button>
+
+            <h3>MeowImportsChecker (Tonynoh)</h3>
+            <span class="cmd-label">Scans C:\ for external cheat and macro client patterns.</span>
+            <pre><code>powershell -ExecutionPolicy Bypass -Command "Invoke-Expression (Invoke-RestMethod 'https://raw.githubusercontent.com/MeowTonynoh/MeowImportsChecker/main/MeowImportsChecker.ps1')"</code></pre>
+            <button class="btn copy-btn" data-copy="powershell -ExecutionPolicy Bypass -Command &quot;Invoke-Expression (Invoke-RestMethod 'https://raw.githubusercontent.com/MeowTonynoh/MeowImportsChecker/main/MeowImportsChecker.ps1')&quot;">Copy</button>
+
+            <h3>JAR Scanner (Lily)</h3>
+            <span class="cmd-label">Checks .jar files for obfuscation, java agents, and Modrinth hash matches.</span>
+            <pre><code>powershell -ExecutionPolicy Bypass -Command "iwr https://raw.githubusercontent.com/praiselily/JARScanner/refs/heads/main/JARScanner.ps1 | iex"</code></pre>
+            <button class="btn copy-btn" data-copy="powershell -ExecutionPolicy Bypass -Command &quot;iwr https://raw.githubusercontent.com/praiselily/JARScanner/refs/heads/main/JARScanner.ps1 | iex&quot;">Copy</button>
+
+            <h3>JARParser (orbdiff)</h3>
+            <span class="cmd-label">Extracts executed .jar traces from Prefetch and DcomLaunch. Reports .pf tamper events.</span>
+            <pre><code>powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/NoDiff-del/JARParser/refs/heads/main/JARParser.ps1)</code></pre>
+            <button class="btn copy-btn" data-copy="powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/NoDiff-del/JARParser/refs/heads/main/JARParser.ps1)">Copy</button>
+
+            <h3>Spokwn BAM Parser</h3>
+            <span class="cmd-label">Parses BAM key for executed paths, timestamps, digital signatures, and cheat flags.</span>
+            <pre><code>powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/spokwn/powershells/refs/heads/main/bamparser.ps1)</code></pre>
+            <button class="btn copy-btn" data-copy="powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/spokwn/powershells/refs/heads/main/bamparser.ps1)">Copy</button>
+
+            <h3>Prefetch Integrity (bacanoicua)</h3>
+            <span class="cmd-label">Checks for missing or read-only Prefetch files.</span>
+            <pre><code>powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/bacanoicua/Screenshare/main/RedLotusPrefetchIntegrityAnalyzer.ps1)</code></pre>
+            <button class="btn copy-btn" data-copy="powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/bacanoicua/Screenshare/main/RedLotusPrefetchIntegrityAnalyzer.ps1)">Copy</button>
+
+            <h3>Common Directories (Lily)</h3>
+            <span class="cmd-label">Lists unsigned files in System32, SysWOW64, and Temp.</span>
+            <pre><code>powershell -Command "Set-ExecutionPolicy Bypass -Scope Process; Invoke-Expression (Invoke-RestMethod 'https://raw.githubusercontent.com/praiselily/lilith-ps/refs/heads/main/CommonDirectories.ps1')"</code></pre>
+            <button class="btn copy-btn" data-copy="powershell -Command &quot;Set-ExecutionPolicy Bypass -Scope Process; Invoke-Expression (Invoke-RestMethod 'https://raw.githubusercontent.com/praiselily/lilith-ps/refs/heads/main/CommonDirectories.ps1')&quot;">Copy</button>
+
+            <h3>Suspicious Scheduler (nolww)</h3>
+            <span class="cmd-label">Parses scheduled tasks and flags unsigned executables.</span>
+            <pre><code>powershell -Command "Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; Invoke-Expression (Invoke-RestMethod 'https://raw.githubusercontent.com/nolww/project-mohr/refs/heads/main/SuspiciousScheduler.ps1')"</code></pre>
+            <button class="btn copy-btn" data-copy="powershell -Command &quot;Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; Invoke-Expression (Invoke-RestMethod 'https://raw.githubusercontent.com/nolww/project-mohr/refs/heads/main/SuspiciousScheduler.ps1')&quot;">Copy</button>
+
+            <h3>Faker Detections (Lily)</h3>
+            <span class="cmd-label">Detects PC swap bypasses via WLAN/ARP/MAC analysis.</span>
+            <pre><code>powershell -ExecutionPolicy Bypass -Command "iwr https://raw.githubusercontent.com/praiselily/WeHateFakers/refs/heads/main/HotspotLogs.ps1 | iex"</code></pre>
+            <button class="btn copy-btn" data-copy="powershell -ExecutionPolicy Bypass -Command &quot;iwr https://raw.githubusercontent.com/praiselily/WeHateFakers/refs/heads/main/HotspotLogs.ps1 | iex&quot;">Copy</button>
+
+            <h3>AcousticVoids Screenshare</h3>
+            <span class="cmd-label">Alternative tool suite loader.</span>
+            <pre><code>powershell -ExecutionPolicy Bypass -Command "Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/piespeas/MyPowerShellScripts-ssing/main/Screenshare.ps1' -UseBasicParsing).Content"</code></pre>
+            <button class="btn copy-btn" data-copy="powershell -ExecutionPolicy Bypass -Command &quot;Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/piespeas/MyPowerShellScripts-ssing/main/Screenshare.ps1' -UseBasicParsing).Content&quot;">Copy</button>
+
+            <h3>Enr1c0o All-in-one</h3>
+            <span class="cmd-label">Multiple fast parsers run sequentially.</span>
+            <pre><code>powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/Enr1c0o/Powershell-Scripts/refs/heads/main/All-in-one.ps1)</code></pre>
+            <button class="btn copy-btn" data-copy="powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass && powershell Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/Enr1c0o/Powershell-Scripts/refs/heads/main/All-in-one.ps1)">Copy</button>
+        </div>
+
+    </div>
+
+    <!-- Modal for Info buttons -->
+    <div class="modal" id="infoModal">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <h2 id="modalTitle" style="margin-top: 0;">Tool Info</h2>
+            <p id="modalBody" style="margin-top: 1rem;"></p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alt Checking Guide</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="nav-bar">
+        <div class="logo">Forensic Guide</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="cheatChecking.html" class="nav-link">Hack Checking</a>
+            <a href="altChecking.html" class="nav-link">Alt Checking</a>
+            <a href="knowledgeBase.html" class="nav-link">Knowledge Base</a>
+            <a href="tools.html" class="nav-link">Tools</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>Alt Account Detection</h1>
+            <p>Methods for finding hidden alternative accounts across various launchers and platforms.</p>
+        </header>
+
+        <section class="glass-panel">
+            <h2>Automated Detection</h2>
+            <p>The fastest way to scan for alternative accounts is to use the dedicated RedLotusAltChecker. It automates the parsing of configuration files and extracts linked Minecraft and Discord accounts across all major launchers.</p>
+            
+            <pre><code>https://github.com/ItzIceHere/RedLotusAltChecker/releases/download/RL/RedLotusAltChecker.exe</code></pre>
+            <button class="btn copy-btn" data-copy="https://github.com/ItzIceHere/RedLotusAltChecker/releases/download/RL/RedLotusAltChecker.exe">Copy Download Link</button>
+
+            <br><br>
+            <p>Alternatively, use Lily's GUI Alt Detector for a comprehensive scan across browsers, discord canary, and .gz files:</p>
+            <pre><code>https://github.com/praiselily/AltDetector</code></pre>
+            <button class="btn copy-btn" data-copy="https://github.com/praiselily/AltDetector">Copy Link</button>
+        </section>
+
+        <section class="glass-panel">
+            <h2>Manual JSON Inspection</h2>
+            <p>If automated tools are unavailable or blocked, you can manually inspect the JSON configuration files of popular Minecraft launchers. Look for the <code>accounts.json</code> or equivalent files which store authentication tokens and usernames.</p>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>Vanilla / General</h3>
+                    <code>%AppData%\.minecraft\launcher_profiles.json</code>
+                    <code>%AppData%\.minecraft\launcher_accounts.json</code>
+                </div>
+                <div class="card">
+                    <h3>Lunar Client</h3>
+                    <code>%UserProfile%\.lunarclient\settings\game\accounts.json</code>
+                </div>
+                <div class="card">
+                    <h3>LabyMod</h3>
+                    <code>%AppData%\.minecraft\LabyMod\accounts.json</code>
+                </div>
+                <div class="card">
+                    <h3>Prism Launcher</h3>
+                    <code>%AppData%\PrismLauncher\accounts.json</code>
+                </div>
+                <div class="card">
+                    <h3>MultiMC</h3>
+                    <code>%AppData%\MultiMC\accounts.json</code>
+                </div>
+                <div class="card">
+                    <h3>TLauncher</h3>
+                    <code>%AppData%\.tlauncher\accounts.json</code>
+                </div>
+            </div>
+
+            <div class="alert warning">
+                <strong>Important:</strong> 
+                Never copy or steal a user's session token or UUID. Your objective is only to verify the account names tied to the launcher. Stealing tokens is a severe privacy violation and illegal.
+            </div>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
